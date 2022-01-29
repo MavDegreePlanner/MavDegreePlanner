@@ -16,16 +16,12 @@ function Homepage() {
         <i className="fas fa-graduation-cap"></i>
       </div>
       <div className="btn__section">
-        <Link to="/Login">
-          <button className="btn__login" onClick={() => navigate('/LoginPage')}>
-            Login
-          </button>
-        </Link>
-        <Link to="/SignUp">
-          <button className="btn__signup" onClick={() => navigate('/SignUp')}>
-            Sign Up
-          </button>
-        </Link>
+        <button className="btn__login" onClick={() => navigate('/Login')}>
+          Login
+        </button>
+        <button className="btn__signup" onClick={() => navigate('/SignUp')}>
+          Sign Up
+        </button>
       </div>
     </div>
   );
