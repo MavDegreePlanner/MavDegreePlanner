@@ -3,7 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import './Homepage.css';
-import Navbar from './Navbar';
+import Navbar from './../Navbar';
 
 function Homepage() {
   const navigate = useNavigate();
