@@ -1,0 +1,109 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+/*
+.forgotPass
+{
+    color: black;
+    font-size: 15px;
+    font-weight: 500;
+    margin-left: 60px;
+    margin-top: 20px;
+    cursor: pointer;
+    text-decoration: underline;
+}*/
+.loginPage
+{
+    height:86vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, #283048, #859398);
+}
+
+.formBox
+{
+    position: relative;
+    display: block;
+    background-color: rgba(255, 255, 255, 0.966);
+    padding: 30px;
+    z-index: 2;
+}
+form
+{
+    display: block;
+    position: relative;
+}
+form:after
+{
+    content: '';
+    display:block;
+    position: absolute;
+    top: -5px;
+    bottom: -5px;
+    left: -5px;
+    right: -5px;
+    z-index: 1;
+    background-image: linear-gradient(to right, #24c6dc, #514a9d);
+}
+.formBox h2
+{
+    color: black;
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 30px;
+}
+.formBox .formInfo
+{
+    display: block;
+    width: 300px;
+    margin-bottom: 15px;
+}
+
+.formBox .formInfo label
+{
+    display: block;
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 5px;
+    transition: 0.4s;
+}
+
+.formBox .formInfo:focus-within label
+{
+    color: cadetblue;
+}
+.formBox .formInfo input
+{
+   display: block;
+   width: 100%;
+   padding: 10px 15px;
+   background-color: #f8f8f8;
+   border-radius: 8px;
+   transition: 0.4s;
+}
+.formBox .formInfo input:focus
+{
+    box-shadow: 0px 0px 3px rgba(0,0,0,0.2);
+}
+
+.formBox input[type = "submit"]
+{
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius:8px;
+    background-image: linear-gradient(to right, #24c6dc, #514a9d);
+    background-size: 200%;
+    background-position: 0%;
+    transition: 0.4s;
+    color: white;
+    cursor: pointer;
+
+}
+.formBox input[type = "submit"]:hover
+{
+    background-position: 100% 0%;
+}
