@@ -11,6 +11,17 @@ import {
 
 const db: Firestore = getFirestore(app);
 
+const getAllCourses = async (): Promise<DocumentData[] | null> => {
+  const allCoursesCol = collection(db, 'allCourses');
+  return await getDocs(allCoursesCol)
+    .then((snapshot) => {
+      return snapshot.docs.map((doc) => doc.data());
+    })
+    .catch((error) => {
+      return null;
+    });
+};
+
 export class DatabaseService {
   static get instance(): DatabaseService {
     if (DatabaseService._instance === undefined) {
@@ -29,3 +40,5 @@ export class DatabaseService {
     return coursesList;
   }
 }
+
+export { db, getAllCourses };

@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { AuthService } from '../../service/AuthService';
+import {
+  logInWithEmailAndPassword,
+  logout,
+  registerWithEmailAndPassword,
+} from '../../service/AuthService';
 import Navbar from './../Navbar';
 import './Login.css';
 
@@ -8,31 +12,28 @@ export default function Login() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    (async () => {
-      await loginUser();
-    })();
+    loginUser();
   };
 
-  async function loginUser(): Promise<string> {
+  async function loginUser() {
     console.log(loginDetails);
-    let result = await AuthService.instance.signInWithEmailAndPassword(
+    let result = logInWithEmailAndPassword(
       loginDetails.email,
       loginDetails.password
     );
     console.log(result);
-
-    return result;
   }
 
   async function signOutUser(): Promise<void> {
     console.log(loginDetails);
-    await AuthService.instance.signOut();
+    await logout();
     console.log('Logged out');
   }
 
   async function signUpUser(): Promise<void> {
     console.log(loginDetails);
-    await AuthService.instance.createUserWithEmailAndPassword(
+    await registerWithEmailAndPassword(
+      'TempUsername',
       loginDetails.email,
       loginDetails.password
     );
@@ -41,7 +42,7 @@ export default function Login() {
 
   async function logOutUser(): Promise<void> {
     console.log(loginDetails);
-    await AuthService.instance.signOut();
+    await logout();
     console.log('Logged out');
   }
 
