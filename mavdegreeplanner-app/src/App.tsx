@@ -7,7 +7,9 @@ import Homepage from './ui/homepage/Homepage';
 import Login from './ui/auth/Login';
 import SignUp from './ui/auth/SignUp';
 
+
 function App() {
+
   return (
     <Router>
       <Routes>

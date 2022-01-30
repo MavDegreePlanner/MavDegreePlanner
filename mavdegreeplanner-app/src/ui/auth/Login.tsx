@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AuthService } from '../../service/AuthService';
 import Navbar from './../Navbar';
 import './Login.css';
 
@@ -7,12 +8,43 @@ export default function Login() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    loginForm();
+    (async () => {
+      await loginUser();
+    })();
   };
 
-  function loginForm() {
+  async function loginUser(): Promise<string> {
     console.log(loginDetails);
+    let result = await AuthService.instance.signInWithEmailAndPassword(
+      loginDetails.email,
+      loginDetails.password
+    );
+    console.log(result);
+
+    return result;
   }
+
+  async function signOutUser(): Promise<void> {
+    console.log(loginDetails);
+    await AuthService.instance.signOut();
+    console.log('Logged out');
+  }
+
+  async function signUpUser(): Promise<void> {
+    console.log(loginDetails);
+    await AuthService.instance.createUserWithEmailAndPassword(
+      loginDetails.email,
+      loginDetails.password
+    );
+    console.log('Signed up');
+  }
+
+  async function logOutUser(): Promise<void> {
+    console.log(loginDetails);
+    await AuthService.instance.signOut();
+    console.log('Logged out');
+  }
+
   return (
     <div>
       <Navbar />

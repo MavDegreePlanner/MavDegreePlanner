@@ -2,6 +2,21 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Firebase Setup
+
+In the project directory, rename the file `.env.template` to `.env` and enter your Firebase config details from your Firebase console in it
+
+Inside the `.env` file
+
+```env
+REACT_APP_FIREBASE_API_KEY=keyHere
+REACT_APP_FIREBASE_AUTH_DOMAIN=domainHere
+REACT_APP_FIREBASE_PROJECT_ID=projectIdHere
+REACT_APP_FIREBASE_STORAGE_BUCKET=storageBucketHere
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=messagingSenderIdHere
+REACT_APP_FIREBASE_APP_ID=appIdHere
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
