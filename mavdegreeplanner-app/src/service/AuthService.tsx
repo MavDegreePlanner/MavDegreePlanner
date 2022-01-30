@@ -11,8 +11,10 @@ import {
 import {
   addDoc,
   collection,
+  doc,
   Firestore,
   getFirestore,
+  setDoc,
 } from 'firebase/firestore';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
@@ -23,7 +25,6 @@ const db: Firestore = getFirestore(app);
 const logInWithEmailAndPassword = async (email: string, password: string) => {
   await signInWithEmailAndPassword(auth, email, password).catch((error) => {
     console.error(error);
-    alert(error.message);
   });
 };
 
@@ -42,10 +43,9 @@ const registerWithEmailAndPassword = async (
   await createUserWithEmailAndPassword(auth, email, password)
     .then(async (userCred) => {
       const user = userCred.user;
-      await addDoc(collection(db, 'users'), {
+      await setDoc(doc(db, `users/${user.uid}`), {
         uid: user.uid,
         name,
-        authProvider: 'local',
         email,
       });
     })

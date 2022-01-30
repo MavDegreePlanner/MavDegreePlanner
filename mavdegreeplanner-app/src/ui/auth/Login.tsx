@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useNavigate } from 'react-router-dom';
 import {
+  auth,
   logInWithEmailAndPassword,
   logout,
   registerWithEmailAndPassword,
@@ -8,7 +11,18 @@ import Navbar from './../Navbar';
 import './Login.css';
 
 export default function Login() {
-  const [loginDetails, setLogin] = useState({ email: '', password: '' });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) {
+      // TODO: trigger a loading screen
+      return;
+    }
+    if (user) navigate('/Dashboard');
+  }, [user, loading, navigate]);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -16,32 +30,25 @@ export default function Login() {
   };
 
   async function loginUser() {
-    console.log(loginDetails);
-    let result = logInWithEmailAndPassword(
-      loginDetails.email,
-      loginDetails.password
-    );
+    console.log(email + ': ' + password);
+    let result = logInWithEmailAndPassword(email, password);
     console.log(result);
   }
 
   async function signOutUser(): Promise<void> {
-    console.log(loginDetails);
+    console.log(email + ': ' + password);
     await logout();
     console.log('Logged out');
   }
 
   async function signUpUser(): Promise<void> {
-    console.log(loginDetails);
-    await registerWithEmailAndPassword(
-      'TempUsername',
-      loginDetails.email,
-      loginDetails.password
-    );
+    console.log(email + ': ' + password);
+    await registerWithEmailAndPassword('TempUsername', email, password);
     console.log('Signed up');
   }
 
   async function logOutUser(): Promise<void> {
-    console.log(loginDetails);
+    console.log(email + ': ' + password);
     await logout();
     console.log('Logged out');
   }
@@ -60,10 +67,8 @@ export default function Login() {
                   className="email"
                   type="email"
                   placeholder="example@gmail.com"
-                  value={loginDetails.email}
-                  onChange={(e) =>
-                    setLogin({ ...loginDetails, email: e.target.value })
-                  }
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
             </div>
@@ -73,10 +78,8 @@ export default function Login() {
                 <input
                   className="password"
                   type="password"
-                  value={loginDetails.password}
-                  onChange={(e) =>
-                    setLogin({ ...loginDetails, password: e.target.value })
-                  }
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </label>
             </div>

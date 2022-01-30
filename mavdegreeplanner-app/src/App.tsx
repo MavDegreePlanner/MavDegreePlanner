@@ -6,6 +6,7 @@ import './App.css';
 import Homepage from './ui/homepage/Homepage';
 import Login from './ui/auth/Login';
 import SignUp from './ui/auth/SignUp';
+import Dashboard from './ui/dashboard/Dashboard';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/Home" element={<Homepage />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
