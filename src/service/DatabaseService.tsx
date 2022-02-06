@@ -22,23 +22,4 @@ const getAllCourses = async (): Promise<DocumentData[] | null> => {
     });
 };
 
-export class DatabaseService {
-  static get instance(): DatabaseService {
-    if (DatabaseService._instance === undefined) {
-      DatabaseService._instance = new DatabaseService();
-    }
-
-    return DatabaseService._instance;
-  }
-
-  private static _instance: DatabaseService;
-
-  async getAllCourses(): Promise<DocumentData[]> {
-    const allCoursesCol = collection(db, 'allCourses');
-    const coursesSnapshot = await getDocs(allCoursesCol);
-    const coursesList = coursesSnapshot.docs.map((doc) => doc.data());
-    return coursesList;
-  }
-}
-
 export { db, getAllCourses };
