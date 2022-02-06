@@ -3,7 +3,6 @@ body {
   height: 100%;
   width: 100%;
   background-color: aliceblue;
-  
 }
 .hell {
   padding: 10px;
@@ -22,7 +21,7 @@ body {
 .box1 {
   width: 65%;
   height: 100%;
-  background-color: rgba(var(--d87,255,255,255),1);
+  background-color: rgba(var(--d87, 255, 255, 255), 1);
   border: 1px solid gray;
   border-radius: 1px;
 
@@ -35,14 +34,12 @@ body {
   align-items: center;
   align-content: center;
   justify-content: center;
-  
 }
 h1 {
   text-align: center;
   padding-bottom: 15px;
   margin: 0;
   font-family: serif;
-  
 }
 p {
   padding-bottom: 20px;
@@ -62,8 +59,8 @@ input {
   padding: 3% 0px 3% 3%;
   display: inline-block;
   box-sizing: border-box;
-  
-  background: rgba(var(--b3f,250,250,250),1);
+
+  background: rgba(var(--b3f, 250, 250, 250), 1);
 }
 
 input:focus {
