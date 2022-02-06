@@ -25,6 +25,7 @@ const db: Firestore = getFirestore(app);
 const logInWithEmailAndPassword = async (email: string, password: string) => {
   await signInWithEmailAndPassword(auth, email, password).catch((error) => {
     console.error(error);
+    alert(error.message);
   });
 };
 
