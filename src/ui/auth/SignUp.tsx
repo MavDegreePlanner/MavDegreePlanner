@@ -1,25 +1,24 @@
 import React from 'react';
 import { useState } from 'react';
+import Navbar from './../Navbar';
+import './SignUp.css';
 
 export default function SignUp() {
-  const [SignUpDetails, setSignUp] = useState({
-    email: '',
-    password: '',
-    password2: '',
-  });
+  const [SignUpDetails, setSignUp] = useState({ email: '', password: '', password2: '' });
 
-  const handleClick = (e: any) => {
+  const handleClick = (e:any) => {
     e.preventDefault();
-    console.log(SignUpDetails);
-  };
+    console.log(SignUpDetails)
+  }
   return (
+    
     <div className="hell">
       <div className="box">
         <form className="box1" onSubmit={handleClick}>
           <div className="hell2">
             <h1>Degree Planner</h1>
             <p>Please fill in this form to create an account.</p>
-            <div className="lineBox"></div>
+            
             <div className="inputBox">
               <input
                 type="text"
@@ -28,8 +27,7 @@ export default function SignUp() {
                 required
                 value={SignUpDetails.email}
                 onChange={(e) =>
-                  setSignUp({ ...SignUpDetails, email: e.target.value })
-                }
+                  setSignUp({ ...SignUpDetails, email: e.target.value })}
               />
             </div>
             <div className="inputBox">
@@ -40,8 +38,7 @@ export default function SignUp() {
                 required
                 value={SignUpDetails.password}
                 onChange={(e) =>
-                  setSignUp({ ...SignUpDetails, password: e.target.value })
-                }
+                  setSignUp({ ...SignUpDetails, password: e.target.value })}
               ></input>
             </div>
             <div className="inputBox">
@@ -52,8 +49,7 @@ export default function SignUp() {
                 required
                 value={SignUpDetails.password2}
                 onChange={(e) =>
-                  setSignUp({ ...SignUpDetails, password2: e.target.value })
-                }
+                  setSignUp({ ...SignUpDetails, password2: e.target.value })}
               />
             </div>
             <div className="buttonBox">

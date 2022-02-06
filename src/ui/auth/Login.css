@@ -32,12 +32,12 @@
     padding: 30px;
     z-index: 2;
 }
-form
+.myForm
 {
     display: block;
     position: relative;
 }
-form:after
+.myForm:after
 {
     content: '';
     display:block;

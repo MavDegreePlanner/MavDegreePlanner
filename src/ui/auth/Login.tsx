@@ -57,7 +57,7 @@ export default function Login() {
     <div>
       <Navbar />
       <div className="loginPage">
-        <form onSubmit={handleSubmit}>
+        <form className = "myForm" onSubmit={handleSubmit}>
           <div className="formBox">
             <h2>LOGIN</h2>
             <div className="formInfo">
