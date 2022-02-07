@@ -4,17 +4,15 @@
     box-sizing: border-box;
 
 }
-/*
+
 .forgotPass
 {
     color: black;
     font-size: 15px;
     font-weight: 500;
-    margin-left: 60px;
-    margin-top: 20px;
     cursor: pointer;
     text-decoration: underline;
-}*/
+}
 .loginPage
 {
     height:86vh;
@@ -101,6 +99,7 @@
     transition: 0.4s;
     color: white;
     cursor: pointer;
+    margin-bottom: 15px;
 
 }
 .formBox input[type = "submit"]:hover

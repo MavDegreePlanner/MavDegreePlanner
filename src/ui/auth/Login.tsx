@@ -84,6 +84,10 @@ export default function Login() {
               </label>
             </div>
             <input type="submit" value="LOGIN" />
+
+            <span className = "forgotPass" onClick={() => navigate('/ForgotPassword')}>
+              Forgot Password?
+            </span>
           </div>
         </form>
       </div>
