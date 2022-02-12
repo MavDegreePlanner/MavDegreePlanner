@@ -1,62 +1,117 @@
-import React from 'react';
 import { useState } from 'react';
 import Navbar from './../Navbar';
-import './SignUp.css';
+import './Login.css';
 
 export default function SignUp() {
-  const [SignUpDetails, setSignUp] = useState({ email: '', password: '', password2: '' });
+  const [SignUpDetails, setSignUp] = useState({
+    email: '',
+    password: '',
+    password2: '',
+    sem: '',
+    year: '',
+    name: '',
+  });
+  const [Email, setEmail] = useState('');
+  const [Password, setPassword] = useState('');
+  const [Password2, setPassword2] = useState('');
+  const [Name, setName] = useState('');
+  const [Sem, setSem] = useState('');
+  const [Major, setMajor] = useState('');
 
-  const handleClick = (e:any) => {
+  const handleClick = (e: any) => {
     e.preventDefault();
-    console.log(SignUpDetails)
-  }
+    console.log(Email, Password, Password2, Name, Sem, Major);
+  };
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+  };
+
   return (
-    
-    <div className="hell">
-      <div className="box">
-        <form className="box1" onSubmit={handleClick}>
-          <div className="hell2">
-            <h1>Degree Planner</h1>
-            <p>Please fill in this form to create an account.</p>
-            
-            <div className="inputBox">
-              <input
-                type="text"
-                placeholder="Enter Email"
-                name="email"
+    <div>
+      <Navbar />
+      <div className="loginPage">
+        <form className="myForm" onSubmit={handleSubmit}>
+          <div className="formBox">
+            <h2>SignUp</h2>
+            <div className="formInfo">
+              <label>
+                Email:
+                <input
+                  className="email"
+                  type="email"
+                  placeholder="example@gmail.com"
+                  value={Email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </label>
+            </div>
+            <div className="formInfo">
+              <label>
+                Password:
+                <input
+                  className="password"
+                  type="password"
+                  value={Password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </label>
+            </div>
+            <div className="formInfo">
+              <label>
+                Repeat Password:
+                <input
+                  className="password"
+                  type="password"
+                  value={Password2}
+                  onChange={(e) => setPassword2(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <div className="formInfo">
+              <label>
+                Name:
+                <input
+                  className="email"
+                  type="email"
+                  placeholder="John Doe"
+                  value={Name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
+            </div>
+            <div className="formInfo">
+              <label className="ey" htmlFor="sem">
+                Starting Semester:{' '}
+              </label>
+              <select
+                className="selectbox"
                 required
-                value={SignUpDetails.email}
-                onChange={(e) =>
-                  setSignUp({ ...SignUpDetails, email: e.target.value })}
-              />
+                value={Sem}
+                onChange={(e) => setSem(e.target.value)}
+              >
+                <option value="1">Fall 2018</option>
+                <option value="2">Spring 2019</option>
+                <option value="3">Fall 2020</option>
+                <option value="4">Spring 2021</option>
+              </select>
             </div>
-            <div className="inputBox">
-              <input
-                type="password"
-                placeholder="Enter Password"
-                name="psw"
+            <div className="formInfo">
+              <label className="ey" htmlFor="major">
+                Major:{' '}
+              </label>
+              <select
+                className="selectbox"
                 required
-                value={SignUpDetails.password}
-                onChange={(e) =>
-                  setSignUp({ ...SignUpDetails, password: e.target.value })}
-              ></input>
+                value={Major}
+                onChange={(e) => setMajor(e.target.value)}
+              >
+                <option value="1">SE</option>
+                <option value="2">CSE</option>
+                <option value="3">CE</option>
+              </select>
             </div>
-            <div className="inputBox">
-              <input
-                type="password"
-                placeholder="Repeat Password"
-                name="psw-repeat"
-                required
-                value={SignUpDetails.password2}
-                onChange={(e) =>
-                  setSignUp({ ...SignUpDetails, password2: e.target.value })}
-              />
-            </div>
-            <div className="buttonBox">
-              <button type="submit" className="signupbtn">
-                Sign Up
-              </button>
-            </div>
+            <input type="submit" value="LOGIN" />
           </div>
         </form>
       </div>
