@@ -9,8 +9,6 @@ import {
   signOut,
 } from 'firebase/auth';
 import {
-  addDoc,
-  collection,
   doc,
   Firestore,
   getFirestore,
@@ -36,11 +34,41 @@ const logInAnonymously = async () => {
   });
 };
 
-const registerWithEmailAndPassword = async (
-  name: string,
-  email: string,
-  password: string
-) => {
+interface RegisterInterface {
+  email: string;
+  password: string;
+  name: string;
+  major: string;
+  startingSemester: string;
+  // startingYear: number;
+}
+
+/** Usage example:
+ * 
+ * ```
+    registerWithEmailAndPasswordNamed({
+      email: 'email@gmail.com',
+      password: 'password',
+      name: 'My Name',
+      major: 'Software Engineering',
+      startingSemester: 'Fall',
+      startingYear: 2019,
+    });
+ * ```
+ * @param email 
+ * @param password 
+ * @param name 
+ * @param major 
+ * @param startingSemester 
+ */
+const registerWithEmailAndPassword = async ({
+  email,
+  password,
+  name,
+  major,
+  startingSemester,
+  // startingYear,
+}: RegisterInterface) => {
   await createUserWithEmailAndPassword(auth, email, password)
     .then(async (userCred) => {
       const user = userCred.user;
@@ -48,6 +76,11 @@ const registerWithEmailAndPassword = async (
         uid: user.uid,
         name,
         email,
+        major,
+        chosenCourseIds: [],
+        classesTaken: [],
+        startingSemester,
+        // startingYear,
       });
     })
     .catch((error) => {

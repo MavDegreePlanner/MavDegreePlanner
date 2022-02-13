@@ -1,30 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useNavigate } from 'react-router-dom';
+import { auth, registerWithEmailAndPassword } from '../../service/AuthService';
 import Navbar from './../Navbar';
 import './Login.css';
 
 export default function SignUp() {
-  const [SignUpDetails, setSignUp] = useState({
-    email: '',
-    password: '',
-    password2: '',
-    sem: '',
-    year: '',
-    name: '',
-  });
+  const navigate = useNavigate();
+  const [user, loading, error] = useAuthState(auth);
+
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const [Password2, setPassword2] = useState('');
   const [Name, setName] = useState('');
   const [Sem, setSem] = useState('');
+  // const [Year, setYear] = useState<number>(0);
   const [Major, setMajor] = useState('');
 
-  const handleClick = (e: any) => {
-    e.preventDefault();
-    console.log(Email, Password, Password2, Name, Sem, Major);
-  };
+  useEffect(() => {
+    if (loading) {
+      // TODO: trigger a loading screen
+      return;
+    }
+    if (user) navigate('/Dashboard');
+  }, [user, loading, navigate]);
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    signUpUser();
   };
+
+  async function signUpUser(): Promise<void> {
+    if (Password !== Password2) {
+      console.log('Passwords did not match');
+
+      return;
+    }
+
+    console.log(`Name: ${Name}`);
+    console.log(`Email: ${Email}`);
+    console.log(`Major: ${Major}`);
+    console.log(`Semester: ${Sem}`);
+    await registerWithEmailAndPassword({
+      name: Name,
+      email: Email,
+      password: Password,
+      major: Major,
+      startingSemester: Sem,
+      // startingYear: Year,
+    });
+    console.log('Signed up');
+  }
 
   return (
     <div>
@@ -72,8 +98,8 @@ export default function SignUp() {
               <label>
                 Name:
                 <input
-                  className="email"
-                  type="email"
+                  className="name"
+                  type="string"
                   placeholder="John Doe"
                   value={Name}
                   onChange={(e) => setName(e.target.value)}
@@ -111,7 +137,7 @@ export default function SignUp() {
                 <option value="3">CE</option>
               </select>
             </div>
-            <input type="submit" value="LOGIN" />
+            <input type="submit" value="SIGNUP" />
           </div>
         </form>
       </div>

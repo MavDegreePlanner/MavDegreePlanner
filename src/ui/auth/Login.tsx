@@ -41,12 +41,6 @@ export default function Login() {
     console.log('Logged out');
   }
 
-  async function signUpUser(): Promise<void> {
-    console.log(email + ': ' + password);
-    await registerWithEmailAndPassword('TempUsername', email, password);
-    console.log('Signed up');
-  }
-
   async function logOutUser(): Promise<void> {
     console.log(email + ': ' + password);
     await logout();
