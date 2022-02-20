@@ -16,6 +16,9 @@ import { Major } from '../models/MajorEnum';
 
 const db: Firestore = getFirestore(app);
 
+/**
+ * @deprecated Since version Feb 20, 2022. Will be deleted soon. Use `getAllCoursesObject` instead.
+ */
 const getAllCourses = async (): Promise<DocumentData[] | null> => {
   const allCoursesCol = collection(db, 'allCourses');
   return await getDocs(allCoursesCol)
