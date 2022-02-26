@@ -89,19 +89,22 @@ const registerWithEmailAndPassword = async ({
     });
 };
 
-const sendPasswordReset = async (email: string) => {
+const sendPasswordReset = async (
+  email: string,
+  onSent?: ((value: void) => void | PromiseLike<void>) | null | undefined,
+  onError?: ((reason: any) => void | PromiseLike<void>) | null | undefined
+) => {
   await sendPasswordResetEmail(auth, email)
     .then(() => {
-      alert('Password reset link sent!');
+      onSent?.call(this) ?? alert('Password reset link sent!');
     })
     .catch((error) => {
-      console.error(error);
-      alert(error.message);
+      onError?.call(this, error)
     });
 };
 
-const logout = () => {
-  signOut(auth);
+const logout = async () => {
+  await signOut(auth);
 };
 
 export {
