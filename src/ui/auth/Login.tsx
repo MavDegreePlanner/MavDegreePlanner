@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useNavigate } from 'react-router-dom';
+import { kNavigateOnAuthenticated } from '../../Constants';
 import {
   auth,
   logInWithEmailAndPassword,
@@ -21,7 +22,7 @@ export default function Login() {
       // TODO: trigger a loading screen
       return;
     }
-    if (user) navigate('/Dashboard');
+    if (user) navigate(kNavigateOnAuthenticated);
   }, [user, loading, navigate]);
 
   const handleSubmit = (e: any) => {

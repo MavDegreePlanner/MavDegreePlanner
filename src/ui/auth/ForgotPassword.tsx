@@ -5,6 +5,7 @@ import Navbar from './../Navbar';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, sendPasswordReset } from '../../service/AuthService';
 import { useNavigate } from 'react-router';
+import { kNavigateOnAuthenticated } from '../../Constants';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -32,7 +33,7 @@ export default function ForgotPassword() {
       // TODO: trigger a loading screen
       return;
     }
-    if (user) navigate("/Dashboard");
+    if (user) navigate(kNavigateOnAuthenticated);
     if (authError) {
       // TODO: Show authentication error on screen
       alert(authError.message)

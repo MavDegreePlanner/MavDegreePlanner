@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import { auth, db, logout } from './../../service/AuthService';
 import { query, collection, getDocs, where } from 'firebase/firestore';
+import { kNavigateOnNotAuthenticated } from '../../Constants';
 function Dashboard() {
   const [user, loading, error] = useAuthState(auth);
   const [name, setName] = useState('');
@@ -23,7 +24,7 @@ function Dashboard() {
     };
 
     if (loading) return;
-    if (!user) return navigate('/');
+    if (!user) return navigate(kNavigateOnNotAuthenticated);
     fetchUserName();
   }, [user, loading, navigate]);
 
