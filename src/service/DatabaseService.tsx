@@ -96,6 +96,7 @@ const getAllCoursesObject = async (): Promise<Course[] | null> => {
 /**
  * Retrieve the user data from Firestore
  * @returns UserData
+ * @throws FirestoreError
  */
 const getUserData = async (): Promise<UserData | null> => {
   const userId = auth.currentUser?.uid;
@@ -103,7 +104,7 @@ const getUserData = async (): Promise<UserData | null> => {
 
   const userDoc = doc(db, 'users', userId);
 
-  const userData : UserData | null = await getDoc(userDoc)
+  const userData: UserData | null = await getDoc(userDoc)
     .then((snapshot: DocumentSnapshot<DocumentData>) => {
       if (!snapshot.exists()) {
         return null
@@ -143,11 +144,7 @@ const getUserData = async (): Promise<UserData | null> => {
       );
 
       return userData;
-    })
-    .catch((error) => {
-      alert(error.message)
-      return null;
-    })
+    });
   
   return userData;
 };
@@ -157,6 +154,7 @@ const getUserData = async (): Promise<UserData | null> => {
  * Update the user data in Firestore
  * @param userData 
  * @returns success
+ * @throws FirestoreError
  */
 const setUserData = async (userData: UserData): Promise<boolean> => {
   const userId = auth.currentUser?.uid;
@@ -167,7 +165,7 @@ const setUserData = async (userData: UserData): Promise<boolean> => {
   await setDoc(userDoc, userData).catch((error) => {
     alert(error.message)
     return false;
-  })
+  });
   return true;
 };
 
