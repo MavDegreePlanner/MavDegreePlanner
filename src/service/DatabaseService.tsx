@@ -11,7 +11,10 @@ import {
   getDoc,
   doc,
   DocumentSnapshot,
-  setDoc
+  setDoc,
+  onSnapshot,
+  FirestoreError,
+  SnapshotOptions
 } from 'firebase/firestore';
 import { Availability } from '../models/Availability';
 import { Major, majorEnumFromString } from '../models/MajorEnum';
@@ -22,6 +25,45 @@ import { ChosenCourse } from '../models/ChosenCourse';
 // import { } from 'firebase/<service>';
 
 const db: Firestore = getFirestore(app);
+
+const userDataConverter = {
+  toFirestore(data: UserData): DocumentData {
+    return {uid: data.uid, major: data.major, startingSemester: data.startingSemester};
+  },
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options: SnapshotOptions
+  ): UserData {
+    const data = snapshot.data(options)!;
+    const uid: string = data.uid;
+    const major: string = data.major
+    const startingSemester: string = data.startingSemester;
+
+    const chosenCourses: ChosenCourse[] = [];
+    for (let i = 0; i < data.chosenCourses.length; i++) {
+      const chosenCourseMap = data.chosenCourses[i];
+      if (chosenCourseMap !== undefined) {
+        const chosenCourse = new ChosenCourse(
+          chosenCourseMap.courseId,
+          chosenCourseMap.semester,
+        );
+        chosenCourses.push(chosenCourse);
+      }
+    }
+
+    const coursesTaken: string[] = [];
+    for (let i = 0; i < data.coursesTaken.length; i++) {
+      const course = data.requiredInMajors[i];
+      if (course !== undefined) {
+        coursesTaken.push(course);
+      }
+    }
+
+    return new UserData(uid, major, startingSemester, chosenCourses, coursesTaken);
+  }
+};
+
+const userDataDocument = (userId: string) => doc(db, 'users', userId).withConverter(userDataConverter);
 
 /**
  * @deprecated Since version Feb 20, 2022. Will be deleted soon. Use `getAllCoursesObject` instead.
@@ -102,50 +144,12 @@ const getUserData = async (): Promise<UserData | null> => {
   const userId = auth.currentUser?.uid;
   if (userId === null || userId === undefined) return null;
 
-  const userDoc = doc(db, 'users', userId);
+  const userSnapshot = await getDoc(userDataDocument(userId));
+  const userData = userSnapshot.data()
+  if (userData === undefined) {
+    return null
+  }
 
-  const userData: UserData | null = await getDoc(userDoc)
-    .then((snapshot: DocumentSnapshot<DocumentData>) => {
-      if (!snapshot.exists()) {
-        return null
-      }
-
-      const data = snapshot.data()
-      const uid: string = data.uid;
-      const major: string = data.major
-      const startingSemester: string = data.startingSemester;
-
-      const chosenCourses: ChosenCourse[] = [];
-      for (let i = 0; i < data.chosenCourses.length; i++) {
-        const chosenCourseMap = data.chosenCourses[i];
-        if (chosenCourseMap !== undefined) {
-          const chosenCourse = new ChosenCourse(
-            chosenCourseMap.courseId,
-            chosenCourseMap.semester,
-          );
-          chosenCourses.push(chosenCourse);
-        }
-      }
-
-      const coursesTaken: string[] = [];
-      for (let i = 0; i < data.coursesTaken.length; i++) {
-        const course = data.requiredInMajors[i];
-        if (course !== undefined) {
-          coursesTaken.push(course);
-        }
-      }
-
-      const userData: UserData = new UserData(
-        uid,
-        major,
-        startingSemester,
-        chosenCourses,
-        coursesTaken,
-      );
-
-      return userData;
-    });
-  
   return userData;
 };
 
@@ -160,13 +164,28 @@ const setUserData = async (userData: UserData): Promise<boolean> => {
   const userId = auth.currentUser?.uid;
   if (userId === null || userId === undefined) return false;
 
-  const userDoc = doc(db, 'users', userId);
-
-  await setDoc(userDoc, userData).catch((error) => {
+  await setDoc(userDataDocument(userId), userData).catch((error) => {
     alert(error.message)
     return false;
   });
   return true;
 };
 
-export { db, getAllCourses, getAllCoursesObject, getUserData, setUserData };
+// export const streamUserData = (next: ((snapshot: UserData) => void) | undefined, error) => {
+//   const userId = auth.currentUser?.uid;
+//   if (userId === null || userId === undefined) return false;
+
+//   const userDoc = doc(db, 'users', userId);
+//   const unsubscribe = onSnapshot(
+//     ,
+//     (snapshot: UserData) => {
+
+//     },
+//     (error: FirestoreError) => {
+      
+//     },
+//   );
+//   return unsubscribe;
+// };
+
+export { db, userDataDocument, getAllCourses, getAllCoursesObject, getUserData, setUserData };
