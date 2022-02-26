@@ -199,7 +199,11 @@ const setUserData = async (userData: UserData): Promise<boolean> => {
   return true;
 };
 
-const streamUserData = (onUserData: (userData: UserData) => void, onError?: ((error: FirestoreError) => void) | undefined, onComplete?: (() => void) | undefined) => {
+const streamUserData = (
+  onUserData: (userData: UserData) => void,
+  onError?: ((error: FirestoreError) => void) | undefined,
+  onComplete?: (() => void) | undefined,
+) => {
   const userId = auth.currentUser?.uid;
   if (userId === null || userId === undefined) return false;
 
@@ -217,7 +221,7 @@ const streamUserData = (onUserData: (userData: UserData) => void, onError?: ((er
       onComplete?.call(this);
     },
   });
-  
+
   return unsubscribe;
 };
 
