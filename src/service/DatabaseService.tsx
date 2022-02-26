@@ -199,21 +199,34 @@ const setUserData = async (userData: UserData): Promise<boolean> => {
   return true;
 };
 
-// export const streamUserData = (next: ((snapshot: UserData) => void) | undefined, error) => {
-//   const userId = auth.currentUser?.uid;
-//   if (userId === null || userId === undefined) return false;
+const streamUserData = (onUserData: (userData: UserData) => void, onError?: ((error: FirestoreError) => void) | undefined, onComplete?: (() => void) | undefined) => {
+  const userId = auth.currentUser?.uid;
+  if (userId === null || userId === undefined) return false;
 
-//   const userDoc = doc(db, 'users', userId);
-//   const unsubscribe = onSnapshot(
-//     ,
-//     (snapshot: UserData) => {
+  const unsubscribe = onSnapshot(userDataDocument(userId), {
+    next: (snapshot: DocumentSnapshot<UserData>) => {
+      const data = snapshot.data();
+      if (data !== undefined) {
+        onUserData(data);
+      }
+    },
+    error: (error: FirestoreError) => {
+      onError?.call(this, error);
+    },
+    complete: () => {
+      onComplete?.call(this);
+    },
+  });
+  
+  return unsubscribe;
+};
 
-//     },
-//     (error: FirestoreError) => {
-      
-//     },
-//   );
-//   return unsubscribe;
-// };
-
-export { db, userDataDocument, getAllCourses, getAllCoursesObject, getUserData, setUserData };
+export {
+  db,
+  userDataDocument,
+  getAllCourses,
+  getAllCoursesObject,
+  getUserData,
+  setUserData,
+  streamUserData,
+};
