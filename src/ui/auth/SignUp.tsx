@@ -8,14 +8,15 @@ import './Login.css';
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading, authError] = useAuthState(auth);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const [Password2, setPassword2] = useState('');
   const [Name, setName] = useState('');
   const [Sem, setSem] = useState('');
-  // const [Year, setYear] = useState<number>(0);
+  const [Year, setYear] = useState<string>('');
   const [Major, setMajor] = useState('');
 
   useEffect(() => {
@@ -24,7 +25,12 @@ export default function SignUp() {
       return;
     }
     if (user) navigate(kNavigateOnAuthenticated);
-  }, [user, loading, navigate]);
+    if (authError) {
+      // TODO: Show authentication error on screen
+      alert(authError.message)
+      return;
+    }
+  }, [user, loading, authError, navigate]);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -48,7 +54,7 @@ export default function SignUp() {
       password: Password,
       major: Major,
       startingSemester: Sem,
-      // startingYear: Year,
+      startingYear: Year,
     });
     console.log('Signed up');
   }

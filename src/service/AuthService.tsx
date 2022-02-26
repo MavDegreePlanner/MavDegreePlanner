@@ -14,6 +14,8 @@ import {
   getFirestore,
   setDoc,
 } from 'firebase/firestore';
+import { setUserData } from './DatabaseService';
+import { UserData } from '../models/UserData';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
@@ -40,7 +42,7 @@ interface RegisterInterface {
   name: string;
   major: string;
   startingSemester: string;
-  // startingYear: number;
+  startingYear: string;
 }
 
 /** Usage example:
@@ -60,6 +62,7 @@ interface RegisterInterface {
  * @param name 
  * @param major 
  * @param startingSemester 
+ * @param startingYear
  */
 const registerWithEmailAndPassword = async ({
   email,
@@ -67,21 +70,21 @@ const registerWithEmailAndPassword = async ({
   name,
   major,
   startingSemester,
-  // startingYear,
+  startingYear,
 }: RegisterInterface) => {
   await createUserWithEmailAndPassword(auth, email, password)
     .then(async (userCred) => {
       const user = userCred.user;
-      await setDoc(doc(db, `users/${user.uid}`), {
-        uid: user.uid,
+      await setUserData(new UserData(
+        user.uid,
         name,
         email,
         major,
-        chosenCourseIds: [],
-        classesTaken: [],
         startingSemester,
-        // startingYear,
-      });
+        startingYear,
+        [],
+        [],
+      ));
     })
     .catch((error) => {
       console.error(error);

@@ -30,8 +30,11 @@ const userDataConverter = {
   toFirestore(data: UserData): DocumentData {
     return {
       uid: data.uid,
+      name: data.name,
+      email: data.email,
       major: data.major,
       startingSemester: data.startingSemester,
+      startingYear: data.startingYear,
       chosenCourses: data.chosenCourses,
       coursesTaken: data.coursesTaken,
     };
@@ -42,8 +45,11 @@ const userDataConverter = {
   ): UserData {
     const data = snapshot.data(options)!;
     const uid: string = data.uid;
-    const major: string = data.major
+    const name: string = data.name;
+    const email: string = data.email;
+    const major: string = data.major;
     const startingSemester: string = data.startingSemester;
+    const startingYear: string = data.startingYear;
 
     const chosenCourses: ChosenCourse[] = [];
     for (let i = 0; i < data.chosenCourses.length; i++) {
@@ -65,7 +71,16 @@ const userDataConverter = {
       }
     }
 
-    return new UserData(uid, major, startingSemester, chosenCourses, coursesTaken);
+    return new UserData(
+      uid,
+      name,
+      email,
+      major,
+      startingSemester,
+      startingYear,
+      chosenCourses,
+      coursesTaken
+    );
   }
 };
 
