@@ -7,10 +7,17 @@ import {
   getDocs,
   DocumentData,
   QuerySnapshot,
-  QueryDocumentSnapshot
+  QueryDocumentSnapshot,
+  getDoc,
+  doc,
+  DocumentSnapshot,
+  setDoc
 } from 'firebase/firestore';
 import { Availability } from '../models/Availability';
 import { Major, majorEnumFromString } from '../models/MajorEnum';
+import { UserData } from '../models/UserData';
+import { auth } from './AuthService';
+import { ChosenCourse } from '../models/ChosenCourse';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
@@ -30,6 +37,10 @@ const getAllCourses = async (): Promise<DocumentData[] | null> => {
     });
 };
 
+/**
+ * Retrieve all available courses from Firestore
+ * @returns Courses
+ */
 const getAllCoursesObject = async (): Promise<Course[] | null> => {
   const allCoursesCol = collection(db, 'allCourses');
   const courses : Course[] | null = await getDocs(allCoursesCol)
@@ -82,4 +93,82 @@ const getAllCoursesObject = async (): Promise<Course[] | null> => {
   return courses;
 };
 
-export { db, getAllCourses, getAllCoursesObject };
+/**
+ * Retrieve the user data from Firestore
+ * @returns UserData
+ */
+const getUserData = async (): Promise<UserData | null> => {
+  const userId = auth.currentUser?.uid;
+  if (userId === null || userId === undefined) return null;
+
+  const userDoc = doc(db, 'users', userId);
+
+  const userData : UserData | null = await getDoc(userDoc)
+    .then((snapshot: DocumentSnapshot<DocumentData>) => {
+      if (!snapshot.exists()) {
+        return null
+      }
+
+      const data = snapshot.data()
+      const uid: string = data.uid;
+      const major: string = data.major
+      const startingSemester: string = data.startingSemester;
+
+      const chosenCourses: ChosenCourse[] = [];
+      for (let i = 0; i < data.chosenCourses.length; i++) {
+        const chosenCourseMap = data.chosenCourses[i];
+        if (chosenCourseMap !== undefined) {
+          const chosenCourse = new ChosenCourse(
+            chosenCourseMap.courseId,
+            chosenCourseMap.semester,
+          );
+          chosenCourses.push(chosenCourse);
+        }
+      }
+
+      const coursesTaken: string[] = [];
+      for (let i = 0; i < data.coursesTaken.length; i++) {
+        const course = data.requiredInMajors[i];
+        if (course !== undefined) {
+          coursesTaken.push(course);
+        }
+      }
+
+      const userData: UserData = new UserData(
+        uid,
+        major,
+        startingSemester,
+        chosenCourses,
+        coursesTaken,
+      );
+
+      return userData;
+    })
+    .catch((error) => {
+      alert(error.message)
+      return null;
+    })
+  
+  return userData;
+};
+
+
+/**
+ * Update the user data in Firestore
+ * @param userData 
+ * @returns success
+ */
+const setUserData = async (userData: UserData): Promise<boolean> => {
+  const userId = auth.currentUser?.uid;
+  if (userId === null || userId === undefined) return false;
+
+  const userDoc = doc(db, 'users', userId);
+
+  await setDoc(userDoc, userData).catch((error) => {
+    alert(error.message)
+    return false;
+  })
+  return true;
+};
+
+export { db, getAllCourses, getAllCoursesObject, getUserData, setUserData };
