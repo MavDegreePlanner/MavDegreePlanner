@@ -10,7 +10,7 @@ import {
   QueryDocumentSnapshot
 } from 'firebase/firestore';
 import { Availability } from '../models/Availability';
-import { Major } from '../models/MajorEnum';
+import { Major, majorEnumFromString } from '../models/MajorEnum';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
@@ -49,21 +49,9 @@ const getAllCoursesObject = async (): Promise<Course[] | null> => {
             availabilityMap.summer,
           );
           const requiredInMajors: Major[] = [];
-          const getMajorEnumFromString = (majorString: string) : Major | undefined => {
-            switch (majorString) {
-              case "Software Engineering":
-                return Major.SoftwareEngineering;
-              case "Computer Engineering":
-                return Major.ComputerEngineering;
-              case "Computer Science":
-                return Major.ComputerScience;
-              default:
-                console.log(`[ERROR]: Unknown required major for ${documentSnapshot.id} - "${majorString}"`);
-                return undefined;
-            }
-          }
+          
           for (let i = 0; i < data.requiredInMajors.length; i++) {
-            const major = getMajorEnumFromString(data.requiredInMajors[i]);
+            const major = majorEnumFromString(data.requiredInMajors[i]);
             if (major !== undefined) {
               requiredInMajors.push(major);
             }
