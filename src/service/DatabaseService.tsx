@@ -28,7 +28,13 @@ const db: Firestore = getFirestore(app);
 
 const userDataConverter = {
   toFirestore(data: UserData): DocumentData {
-    return {uid: data.uid, major: data.major, startingSemester: data.startingSemester};
+    return {
+      uid: data.uid,
+      major: data.major,
+      startingSemester: data.startingSemester,
+      chosenCourses: data.chosenCourses,
+      coursesTaken: data.coursesTaken,
+    };
   },
   fromFirestore(
     snapshot: QueryDocumentSnapshot,
