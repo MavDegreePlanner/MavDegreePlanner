@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import { setUserData } from './DatabaseService';
 import { UserData } from '../models/UserData';
+import { FirebaseError } from 'firebase/app';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
@@ -43,6 +44,7 @@ interface RegisterInterface {
   major: string;
   startingSemester: string;
   startingYear: string;
+  onError?: (error: any) => void | PromiseLike<any>
 }
 
 /** Usage example:
@@ -71,6 +73,7 @@ const registerWithEmailAndPassword = async ({
   major,
   startingSemester,
   startingYear,
+  onError,
 }: RegisterInterface) => {
   await createUserWithEmailAndPassword(auth, email, password)
     .then(async (userCred) => {
@@ -86,9 +89,8 @@ const registerWithEmailAndPassword = async ({
         [],
       ));
     })
-    .catch((error) => {
-      console.error(error);
-      alert(error.message);
+    .catch((error: any) => {
+      onError?.call(this, error) ?? alert(error.message);
     });
 };
 

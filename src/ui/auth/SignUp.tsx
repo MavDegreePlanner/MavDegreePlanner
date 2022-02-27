@@ -1,3 +1,4 @@
+import { FirebaseError } from 'firebase/app';
 import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +33,12 @@ export default function SignUp() {
     }
   }, [user, loading, authError, navigate]);
 
+  useEffect(() => {
+    if (errorMessage.length > 0) {
+      // TODO: Show error message on screen
+    }
+  }, [errorMessage]);
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
     signUpUser();
@@ -40,7 +47,7 @@ export default function SignUp() {
   async function signUpUser(): Promise<void> {
     if (Password !== Password2) {
       console.log('Passwords did not match');
-
+      setErrorMessage('passwords-do-not-match');
       return;
     }
 
@@ -48,6 +55,7 @@ export default function SignUp() {
     console.log(`Email: ${Email}`);
     console.log(`Major: ${Major}`);
     console.log(`Semester: ${Sem}`);
+    console.log(`Year: ${Year}`);
     await registerWithEmailAndPassword({
       name: Name,
       email: Email,
@@ -55,6 +63,13 @@ export default function SignUp() {
       major: Major,
       startingSemester: Sem,
       startingYear: Year,
+      onError: (error) => {
+        if (error instanceof FirebaseError) {
+          setErrorMessage(`Sign up failed: ${error.message}`);
+        } else {
+          setErrorMessage(`Sign up failed: ${error}`);
+        }
+      }
     });
     console.log('Signed up');
   }
