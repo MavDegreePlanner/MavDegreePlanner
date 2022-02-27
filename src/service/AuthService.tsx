@@ -17,9 +17,21 @@ import { UserData } from '../models/UserData';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
+/**
+ * Firebase Auth instance
+ */
 const auth: Auth = getAuth(app);
+
+/**
+ * Firebase Firestore instance
+ */
 const db: Firestore = getFirestore(app);
 
+/**
+ * Log in the user with Firebase Auth
+ * @param email 
+ * @param password 
+ */
 const logInWithEmailAndPassword = async (email: string, password: string) => {
   await signInWithEmailAndPassword(auth, email, password).catch((error) => {
     console.error(error);
@@ -27,6 +39,11 @@ const logInWithEmailAndPassword = async (email: string, password: string) => {
   });
 };
 
+/**
+ * Log in without creating an account. Note that this account will be forever unaccessible if logged out.
+ * 
+ * Anonymous accounts can be converted to normal accounts (Not implemented)
+ */
 const logInAnonymously = async () => {
   await signInAnonymously(auth).catch((error) => {
     console.error(error);
@@ -91,6 +108,12 @@ const registerWithEmailAndPassword = async ({
     });
 };
 
+/**
+ * Send a password reset email to the requested email
+ * @param email 
+ * @param onSent 
+ * @param onError 
+ */
 const sendPasswordReset = async (
   email: string,
   onSent?: ((value: void) => void | PromiseLike<void>) | null | undefined,
@@ -105,6 +128,9 @@ const sendPasswordReset = async (
     });
 };
 
+/**
+ * Log out the current user
+ */
 const logout = async () => {
   await signOut(auth);
 };

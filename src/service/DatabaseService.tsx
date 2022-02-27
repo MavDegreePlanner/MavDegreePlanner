@@ -24,8 +24,14 @@ import { ChosenCourse } from '../models/ChosenCourse';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
+/**
+ * Firebase Firestore instance
+ */
 const db: Firestore = getFirestore(app);
 
+/**
+ * Convert QueryDocumentSnapshot to UserData and UserData to map
+ */
 const userDataConverter = {
   toFirestore(data: UserData): DocumentData {
     return {
@@ -84,6 +90,9 @@ const userDataConverter = {
   }
 };
 
+/**
+ * Convert QueryDocumentSnapshot to Course and Course to Map
+ */
 const allCoursesConverter = {
   toFirestore(course: Course): DocumentData {
     return {
@@ -135,7 +144,16 @@ const allCoursesConverter = {
   }
 };
 
+/**
+ * Get the user's document reference in Firebase Firestore by their user ID
+ * @param userId 
+ * @returns DocumentReference<UserData>
+ */
 const userDataDocument = (userId: string) => doc(db, 'users', userId).withConverter(userDataConverter);
+
+/**
+ * allCourses Firebase Firestore collection reference
+ */
 const allCoursesCollection = collection(db, 'allCourses').withConverter(allCoursesConverter);
 
 /**
@@ -214,6 +232,13 @@ const setUserData = async (userData: UserData): Promise<boolean> => {
   return true;
 };
 
+/**
+ * List to user data changes in Firebase Firestore. Returns [Unsubscribe] which can be used to stop listening for changes
+ * @param onUserData 
+ * @param onError 
+ * @param onComplete 
+ * @returns unsubscribe
+ */
 const streamUserData = (
   onUserData: (userData: UserData) => void,
   onError?: ((error: FirestoreError) => void) | undefined,
