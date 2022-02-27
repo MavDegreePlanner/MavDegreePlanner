@@ -8,10 +8,6 @@ import {
   sendPasswordResetEmail,
   signOut,
 } from 'firebase/auth';
-import {
-  Firestore,
-  getFirestore,
-} from 'firebase/firestore';
 import { setUserData } from './DatabaseService';
 import { UserData } from '../models/UserData';
 // Follow this pattern to import other Firebase services
@@ -21,11 +17,6 @@ import { UserData } from '../models/UserData';
  * Firebase Auth instance
  */
 const auth: Auth = getAuth(app);
-
-/**
- * Firebase Firestore instance
- */
-const db: Firestore = getFirestore(app);
 
 /**
  * Log in the user with Firebase Auth
@@ -137,7 +128,6 @@ const logout = async () => {
 
 export {
   auth,
-  db,
   logInWithEmailAndPassword,
   logInAnonymously,
   registerWithEmailAndPassword,
