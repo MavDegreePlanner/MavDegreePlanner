@@ -9,14 +9,11 @@ import {
   signOut,
 } from 'firebase/auth';
 import {
-  doc,
   Firestore,
   getFirestore,
-  setDoc,
 } from 'firebase/firestore';
 import { setUserData } from './DatabaseService';
 import { UserData } from '../models/UserData';
-import { FirebaseError } from 'firebase/app';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 

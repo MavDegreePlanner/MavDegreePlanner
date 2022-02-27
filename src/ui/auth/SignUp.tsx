@@ -136,7 +136,12 @@ export default function SignUp() {
                 className="selectbox"
                 required
                 value={Sem}
-                onChange={(e) => setSem(e.target.value)}
+                onChange={(e) => {
+                  const semesterYear = e.target.value;
+                  const semesterYearSplit = semesterYear.split(' ');
+                  setSem(semesterYearSplit[0]);
+                  setYear(semesterYearSplit[1]);
+                }}
               >
                 <option value="1">Fall 2018</option>
                 <option value="2">Spring 2019</option>
