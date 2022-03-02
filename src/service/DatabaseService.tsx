@@ -254,12 +254,8 @@ const streamUserData = (
         onUserData(data);
       }
     },
-    error: (error: FirestoreError) => {
-      onError?.call(this, error);
-    },
-    complete: () => {
-      onComplete?.call(this);
-    },
+    error: onError,
+    complete: onComplete,
   });
 
   return unsubscribe;
