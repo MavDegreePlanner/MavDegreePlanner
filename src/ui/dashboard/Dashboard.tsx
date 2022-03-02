@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
-import { auth, db, logout } from './../../service/AuthService';
+import { auth, logout } from './../../service/AuthService';
 import { query, collection, getDocs, where } from 'firebase/firestore';
 import { kNavigateOnNotAuthenticated } from '../../Constants';
+import { db } from '../../service/DatabaseService';
 function Dashboard() {
   const [user, loading, error] = useAuthState(auth);
   const [name, setName] = useState('');
