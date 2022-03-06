@@ -64,6 +64,7 @@ const userDataConverter = {
         const chosenCourse = new ChosenCourse(
           chosenCourseMap.courseId,
           chosenCourseMap.semester,
+          chosenCourseMap.year,
         );
         chosenCourses.push(chosenCourse);
       }

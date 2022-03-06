@@ -1,6 +1,6 @@
 import { Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
-import Course from "./Course";
+import CourseReact from "./CourseReact";
 
 const Container = styled.div`
   background-color: #e1f2fb;
@@ -34,10 +34,10 @@ const Column: React.FC<ColumnProps> = ({ column, courses }) => {
     <Container>
       <Title>{column.title}</Title>
       <Droppable droppableId={column.id}>
-        {(provided) => (
+        {(provided: any) => (
           <CourseList ref={provided.innerRef} {...provided.droppableProps}>
             {courses.map((course: any, index: number) => (
-              <Course key={course.id} course={course} index={index} />
+              <CourseReact key={course.id} course={course} index={index} />
             ))}
             {provided.placeholder}
           </CourseList>
