@@ -203,10 +203,10 @@ function Planner() {
       } catch (e) {
         if (e instanceof FirestoreError) {
           setError('all-courses-get-failed')
-          console.log(e.message);
+          console.error(e.message);
         } else {
           setError('all-courses-get-failed')
-          console.log('all-courses-get-failed');
+          console.error('all-courses-get-failed');
         }
       }
 
