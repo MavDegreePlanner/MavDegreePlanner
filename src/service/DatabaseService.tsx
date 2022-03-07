@@ -14,7 +14,8 @@ import {
   setDoc,
   onSnapshot,
   FirestoreError,
-  SnapshotOptions
+  SnapshotOptions,
+  updateDoc
 } from 'firebase/firestore';
 import { Availability } from '../models/Availability';
 import { Major, majorEnumFromString } from '../models/MajorEnum';
@@ -233,6 +234,58 @@ const setUserData = async (userData: UserData): Promise<boolean> => {
   return true;
 };
 
+
+/**
+ * Update the user data with a new class
+ * @param userData 
+ * @returns success
+ * @throws FirestoreError
+ */
+const modifyUserChosenCourse = async (chosenCourse: ChosenCourse): Promise<boolean> => {
+  const userId = auth.currentUser?.uid;
+  if (userId === null || userId === undefined) return false;
+
+  const userData = await getUserData();
+  const currentChosenCourses = (userData?.chosenCourses ?? []).filter(
+    (currentChosenCourse) => currentChosenCourse.courseId !== chosenCourse.courseId,
+  );
+
+  await updateDoc(userDataDocument(userId), {
+    chosenCourses: [...currentChosenCourses, chosenCourse]
+  }).catch((error) => {
+    alert(error.message)
+    return false;
+  });
+
+  return true;
+};
+
+
+/**
+ * Remove chosen course from user data
+ * @param userData 
+ * @returns success
+ * @throws FirestoreError
+ */
+const removeUserChosenCourse = async (chosenCourse: ChosenCourse): Promise<boolean> => {
+  const userId = auth.currentUser?.uid;
+  if (userId === null || userId === undefined) return false;
+
+  const userData = await getUserData();
+  const chosenCourses = (userData?.chosenCourses ?? []).filter(
+    (currentChosenCourse) => currentChosenCourse.courseId !== chosenCourse.courseId,
+  );
+
+  await updateDoc(userDataDocument(userId), {
+    chosenCourses: chosenCourses
+  }).catch((error) => {
+    alert(error.message)
+    return false;
+  });
+
+  return true;
+};
+
 /**
  * List to user data changes in Firebase Firestore. Returns [Unsubscribe] which can be used to stop listening for changes
  * @param onUserData 
@@ -246,7 +299,7 @@ const streamUserData = (
   onComplete?: (() => void) | undefined,
 ) => {
   const userId = auth.currentUser?.uid;
-  if (userId === null || userId === undefined) return false;
+  if (userId === null || userId === undefined) return null;
 
   const unsubscribe = onSnapshot(userDataDocument(userId), {
     next: (snapshot: DocumentSnapshot<UserData>) => {
@@ -270,4 +323,6 @@ export {
   getUserData,
   setUserData,
   streamUserData,
+  modifyUserChosenCourse,
+  removeUserChosenCourse,
 };
