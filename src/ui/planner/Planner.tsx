@@ -19,6 +19,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../service/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { UserData } from '../../models/UserData';
+import { FirestoreError } from '@firebase/firestore';
 
 // const Header = styled.div`
 //   font-size: 40px;
@@ -178,27 +179,36 @@ function Planner() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const courses = await getAllCoursesObject();
-
-      if (courses === null) {
-        return;
-      }
-
-      setAllCourses(courses);
-      const allCourseIds = courses.map((course) => {
-        return course.courseId;
-      })
-
-      setColumns((columns) => {
-        return {
-          ...columns,
-          'allCourses': {
-            id: "allCourses",
-            title: 'Course List',
-            courseIds: allCourseIds,
-          },
+      try {
+        const courses = await getAllCoursesObject();
+        if (courses === null) {
+          return;
         }
-      })
+  
+        setAllCourses(courses);
+        const allCourseIds = courses.map((course) => {
+          return course.courseId;
+        });
+  
+        setColumns((columns) => {
+          return {
+            ...columns,
+            'allCourses': {
+              id: "allCourses",
+              title: 'Course List',
+              courseIds: allCourseIds,
+            },
+          }
+        });
+      } catch (e) {
+        if (e instanceof FirestoreError) {
+          setError('all-courses-get-failed')
+          console.log(e.message);
+        } else {
+          setError('all-courses-get-failed')
+          console.log('all-courses-get-failed');
+        }
+      }
 
     }
     if (loading) return;
@@ -326,7 +336,10 @@ function Planner() {
         <input placeholder="Search..." onChange={onChange} />
         <Container>
           {columnOrder.map(() => {
-            if (columns === null) return;
+            if (columns === null) {
+              console.log('columns is null');
+              return;
+            };
 
             const column = columns['allCourses'];
 
@@ -346,7 +359,10 @@ function Planner() {
               });
           })}
           {columnOrder.map((columnId: string) => {
-            if (columns === null) return;
+            if (columns === null) {
+              console.log('columns is null');
+              return;
+            };
             
             const column = columns[columnId];
             if (columnId !== 'allCourses') {

@@ -175,9 +175,10 @@ const getAllCourses = async (): Promise<DocumentData[] | null> => {
 /**
  * Retrieve all available courses from Firestore
  * @returns Courses
+ * @throws FirestoreError
  */
 const getAllCoursesObject = async (): Promise<Course[] | null> => {
-  const courses : Course[] | null = await getDocs(allCoursesCollection)
+  const courses: Course[] | null = await getDocs(allCoursesCollection)
     .then((snapshot: QuerySnapshot<Course>) => {
       let courses: Course[] = [];
       for (let i = 0; i < snapshot.docs.length; i++) {
@@ -189,11 +190,7 @@ const getAllCoursesObject = async (): Promise<Course[] | null> => {
         }
       }
       return courses;
-    })
-    .catch((error) => {
-      alert(error.message)
-      return null;
-    })
+    });
   
   return courses;
 };
