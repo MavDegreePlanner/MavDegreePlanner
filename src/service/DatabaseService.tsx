@@ -264,13 +264,13 @@ const modifyUserChosenCourse = async (chosenCourse: ChosenCourse): Promise<boole
  * @returns success
  * @throws FirestoreError
  */
-const removeUserChosenCourse = async (chosenCourse: ChosenCourse): Promise<boolean> => {
+const removeUserChosenCourse = async (courseId: string): Promise<boolean> => {
   const userId = auth.currentUser?.uid;
   if (userId === null || userId === undefined) return false;
 
   const userData = await getUserData();
   const chosenCourses = (userData?.chosenCourses ?? []).filter(
-    (currentChosenCourse) => currentChosenCourse.courseId !== chosenCourse.courseId,
+    (currentChosenCourse) => currentChosenCourse.courseId !== courseId,
   );
 
   await updateDoc(userDataDocument(userId), {
@@ -284,7 +284,7 @@ const removeUserChosenCourse = async (chosenCourse: ChosenCourse): Promise<boole
 };
 
 /**
- * List to user data changes in Firebase Firestore. Returns [Unsubscribe] which can be used to stop listening for changes
+ * Listen to user data changes in Firebase Firestore. Returns [Unsubscribe] which can be used to stop listening for changes
  * @param onUserData 
  * @param onError 
  * @param onComplete 

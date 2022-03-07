@@ -5,7 +5,7 @@ import './Dashboard.css';
 import { auth, logout } from './../../service/AuthService';
 import { FirestoreError } from 'firebase/firestore';
 import { kNavigateOnNotAuthenticated } from '../../Constants';
-import { db, getUserData } from '../../service/DatabaseService';
+import { getUserData } from '../../service/DatabaseService';
 function Dashboard() {
   const [user, loading, authError] = useAuthState(auth);
   const [name, setName] = useState('');

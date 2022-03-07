@@ -12,14 +12,14 @@ import {
 import Column from './Column';
 // import CourseReact from './CourseReact';
 import styled from 'styled-components';
-import { getAllCoursesObject, getUserData, streamUserData } from '../../service/DatabaseService';
+import { getAllCoursesObject, getUserData, modifyUserChosenCourse, removeUserChosenCourse } from '../../service/DatabaseService';
 import { Course } from '../../models/Course';
 import { kNavigateOnNotAuthenticated } from '../../Constants';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../service/AuthService';
 import { useNavigate } from 'react-router-dom';
-import { UserData } from '../../models/UserData';
 import { FirestoreError } from '@firebase/firestore';
+import { ChosenCourse } from '../../models/ChosenCourse';
 
 // const Header = styled.div`
 //   font-size: 40px;
@@ -80,7 +80,6 @@ const Container = styled.div`
 function Planner() {
   const [user, loading, authError] = useAuthState(auth);
   const [error, setError] = useState<string>();
-  const [userData, setUserData] = useState<UserData>();
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [columns, setColumns] = useState<{
     [key: string]: {
@@ -120,62 +119,57 @@ function Planner() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = streamUserData(
-      (userData) => {
-        setUserData(userData);
-        const summerCourses: string[] = [];
-        const springCourses: string[] = [];
-        const winterCourses: string[] = [];
-        const fallCourses: string[] = [];
-        userData.chosenCourses.forEach((course) => {
-          if (course.semester === 'summer' && course.year === year) {
-            summerCourses.push(course.courseId);
-          } else if (course.semester === 'spring' && course.year === year) {
-            springCourses.push(course.courseId);
-          } else if (course.semester === 'winter' && course.year === year) {
-            winterCourses.push(course.courseId);
-          } else if (course.semester === 'fall' && course.year === year) {
-            fallCourses.push(course.courseId);
-          }
-        })
-  
-        setColumns((columns) => {
-          return {
-            ...columns,
-            'summer': {
-              id: "summer",
-              title: 'Summer 1 & 2',
-              courseIds: summerCourses,
-            },
-            'spring': {
-              id: "spring",
-              title: 'Spring',
-              courseIds: springCourses,
-            },
-            'winter': {
-              id: "winter",
-              title: 'Winter-mester',
-              courseIds: winterCourses,
-            },
-            'fall': {
-              id: "fall",
-              title: 'Fall',
-              courseIds: fallCourses,
-            }
-          }
-        });
-        
-        // Set column order
-        setColumnOrder(['allCourses', 'summer', 'spring', 'winter', 'fall']);
-      },
-      (onError) => {
-        setError('user-data-get-fail');
-        console.log(onError.message);
-      },
-    );
-    if (unsubscribe === null) return;
+    const fetchChosenCourses = async () => {
+      const userData = await getUserData();
+      if (userData === null) return;
 
-    return unsubscribe;
+      const summerCourses: string[] = [];
+      const springCourses: string[] = [];
+      const winterCourses: string[] = [];
+      const fallCourses: string[] = [];
+      userData.chosenCourses.forEach((course) => {
+        if (course.semester === 'summer' && course.year === year) {
+          summerCourses.push(course.courseId);
+        } else if (course.semester === 'spring' && course.year === year) {
+          springCourses.push(course.courseId);
+        } else if (course.semester === 'winter' && course.year === year) {
+          winterCourses.push(course.courseId);
+        } else if (course.semester === 'fall' && course.year === year) {
+          fallCourses.push(course.courseId);
+        }
+      })
+
+      setColumns((columns) => {
+        return {
+          ...columns,
+          'summer': {
+            id: "summer",
+            title: 'Summer 1 & 2',
+            courseIds: summerCourses,
+          },
+          'spring': {
+            id: "spring",
+            title: 'Spring',
+            courseIds: springCourses,
+          },
+          'winter': {
+            id: "winter",
+            title: 'Winter-mester',
+            courseIds: winterCourses,
+          },
+          'fall': {
+            id: "fall",
+            title: 'Fall',
+            courseIds: fallCourses,
+          }
+        }
+      });
+      
+      // Set column order
+      setColumnOrder(['allCourses', 'summer', 'spring', 'winter', 'fall']);
+    }
+
+    fetchChosenCourses();
   }, [year]);
 
   useEffect(() => {
@@ -296,8 +290,6 @@ function Planner() {
         ...columns,
         [newColumn.id]: newColumn,
       });
-
-      // TODO(@getBoolean): Change to make firebase call to update data
     }
     // Moving from one list to another
     else {
@@ -325,8 +317,12 @@ function Planner() {
         [newFinishColumn.id]: newFinishColumn,
       });
 
-
-      // TODO(@getBoolean): Change to make firebase call to update data
+      // Make firebase call to update data only if semester changed
+      if (newFinishColumn.id === 'allCourses') {
+        removeUserChosenCourse(draggedCourse);
+      } else {
+        modifyUserChosenCourse(new ChosenCourse(draggedCourse, newFinishColumn.id, year));
+      }
     }
   };
 
