@@ -114,7 +114,7 @@ function Planner() {
       courseIds: [],
     }
   });
-  const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const [columnOrder, setColumnOrder] = useState<string[]>(['allCourses', 'summer', 'spring', 'winter', 'fall']);
   const [year, setYear] = useState<number>(2022);
   const navigate = useNavigate();
 
@@ -332,45 +332,34 @@ function Planner() {
       <DragDropContext onDragEnd={onDragEnd}>
         <input placeholder="Search..." onChange={onChange} />
         <Container>
-          {columnOrder.map(() => {
-            if (columns === null) {
-              console.log('columns is null');
-              return;
-            };
+          {columnOrder.map((columnId: string) => {
+            if (columnId === 'allCourses') {
+              const column = columns['allCourses'];
 
-            const column = columns['allCourses'];
-
-            Object.keys(column.courseIds)
-              .filter((course: string) => {
-                return searchTerm === '' ||
-                  course.toLowerCase().includes(searchTerm.toLowerCase())
-              })
-              .map((course) => {
+              const filteredCourses = Object.keys(column.courseIds)
+                .filter((course: string) => {
+                  return searchTerm === '' ||
+                    course.toLowerCase().includes(searchTerm.toLowerCase())
+                });
+              
                 return (
                   <Column
-                    key={columns.allCourses.id}
-                    column={columns.allCourses}
-                    courses={course}
+                    key={column.id}
+                    column={column}
+                    courses={filteredCourses}
                   />
                 );
-              });
-          })}
-          {columnOrder.map((columnId: string) => {
-            if (columns === null) {
-              console.log('columns is null');
-              return;
-            };
+            }
             
             const column = columns[columnId];
-            if (columnId !== 'allCourses') {
-              return (
-                <Column
-                  key={column.id}
-                  column={column}
-                  courses={column.courseIds}
-                />
-              );
-            }
+            
+            return (
+              <Column
+                key={column.id}
+                column={column}
+                courses={column.courseIds}
+              />
+            );
           })}
         </Container>
       </DragDropContext>

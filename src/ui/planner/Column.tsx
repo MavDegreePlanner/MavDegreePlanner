@@ -25,8 +25,12 @@ const CourseList = styled.div<any>`
 `;
 
 interface ColumnProps {
-  column: any;
-  courses: any;
+  column: {
+    id: string,
+    title: string,
+    courseIds: string[],
+  };
+  courses: string[];
 }
 
 const Column: React.FC<ColumnProps> = ({ column, courses }) => {
