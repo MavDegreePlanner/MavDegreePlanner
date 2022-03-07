@@ -122,7 +122,8 @@ function Planner() {
   useEffect(() => {
     const unsubscribe = streamUserData(
       (userData) => {
-        setUserData(userData);const summerCourses: string[] = [];
+        setUserData(userData);
+        const summerCourses: string[] = [];
         const springCourses: string[] = [];
         const winterCourses: string[] = [];
         const fallCourses: string[] = [];
