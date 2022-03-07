@@ -5,8 +5,6 @@ import { kNavigateOnAuthenticated } from '../../Constants';
 import {
   auth,
   logInWithEmailAndPassword,
-  logout,
-  registerWithEmailAndPassword,
 } from '../../service/AuthService';
 import Navbar from './../Navbar';
 import './Login.css';
@@ -19,11 +17,14 @@ export default function Login() {
 
   useEffect(() => {
     if (loading) {
-      // TODO: trigger a loading screen
-      return;
     }
-    if (user) navigate(kNavigateOnAuthenticated);
-  }, [user, loading, navigate]);
+    else if (error) {
+      console.log(error.message);
+    }
+    else if (user) {
+      navigate(kNavigateOnAuthenticated)
+    };
+  }, [user, loading, error, navigate]);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -32,20 +33,8 @@ export default function Login() {
 
   async function loginUser() {
     console.log(email + ': ' + password);
-    let result = logInWithEmailAndPassword(email, password);
-    console.log(result);
-  }
-
-  async function signOutUser(): Promise<void> {
-    console.log(email + ': ' + password);
-    await logout();
-    console.log('Logged out');
-  }
-
-  async function logOutUser(): Promise<void> {
-    console.log(email + ': ' + password);
-    await logout();
-    console.log('Logged out');
+    await logInWithEmailAndPassword(email, password);
+    console.log('Logged in');
   }
 
   return (
