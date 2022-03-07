@@ -37,6 +37,7 @@ function Dashboard() {
     }
     else if (!user) {
       navigate(kNavigateOnNotAuthenticated);
+    } else {
       fetchUserName();
     }
   }, [user, loading, authError, navigate]);
