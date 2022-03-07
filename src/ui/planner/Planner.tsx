@@ -79,7 +79,7 @@ const Container = styled.div`
 
 function Planner() {
   const [user, loading, authError] = useAuthState(auth);
-  const [error, setError] = useState<string>();
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [columns, setColumns] = useState<{
     [key: string]: {
@@ -117,6 +117,13 @@ function Planner() {
   const [columnOrder, setColumnOrder] = useState<string[]>(['allCourses', 'summer', 'spring', 'winter', 'fall']);
   const [year, setYear] = useState<number>(2022);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (errorMessage.length > 0) {
+      // TODO: Show error message on screen
+      console.error(errorMessage);
+    }
+  }, [errorMessage]);
 
   useEffect(() => {
     const fetchChosenCourses = async () => {
@@ -197,11 +204,9 @@ function Planner() {
         });
       } catch (e) {
         if (e instanceof FirestoreError) {
-          setError('all-courses-get-failed')
-          console.error(e.message);
+          setErrorMessage('all-courses-get-failed')
         } else {
-          setError('all-courses-get-failed')
-          console.error('all-courses-get-failed');
+          setErrorMessage('all-courses-get-failed')
         }
       }
 
