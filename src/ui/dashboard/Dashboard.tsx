@@ -48,7 +48,10 @@ function Dashboard() {
         Logged in as
         <div>{name}</div>
         <div>{user?.email}</div>
-        <button className="dashboard__btn" onClick={logout}>
+        <button className="dashboard__btn" onClick={async () => {
+          await logout();
+          navigate(kNavigateOnNotAuthenticated);
+        }}>
           Logout
         </button>
       </div>
