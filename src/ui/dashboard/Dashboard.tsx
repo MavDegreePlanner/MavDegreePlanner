@@ -3,24 +3,29 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import { auth, logout } from './../../service/AuthService';
-import { query, collection, getDocs, where } from 'firebase/firestore';
+import { FirestoreError } from 'firebase/firestore';
 import { kNavigateOnNotAuthenticated } from '../../Constants';
-import { db } from '../../service/DatabaseService';
+import { db, getUserData } from '../../service/DatabaseService';
 function Dashboard() {
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading, authError] = useAuthState(auth);
   const [name, setName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserName = async () => {
       try {
-        const q = query(collection(db, 'users'), where('uid', '==', user?.uid));
-        const doc = await getDocs(q);
-        const data = doc.docs[0].data();
-        setName(data.name);
+        const userData = await getUserData();
+        setName(userData?.name ?? 'Not logged in')
       } catch (err) {
-        console.error(err);
-        alert('An error occured while fetching user data');
+        if (err instanceof FirestoreError) {
+          console.error('user-data-get-failed');
+          setErrorMessage('An error occured while fetching user data');
+        } else {
+          console.error('user-data-get-failed');
+          setErrorMessage('An error occured while fetching user data');
+        }
+        
       }
     };
 
