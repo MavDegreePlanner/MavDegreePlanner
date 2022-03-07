@@ -10,7 +10,7 @@ import {
   // DropResult,
 } from 'react-beautiful-dnd';
 import Column from './Column';
-import CourseReact from './CourseReact';
+// import CourseReact from './CourseReact';
 import styled from 'styled-components';
 import { getAllCoursesObject, getUserData, streamUserData } from '../../service/DatabaseService';
 import { Course } from '../../models/Course';
@@ -20,61 +20,61 @@ import { auth } from '../../service/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { UserData } from '../../models/UserData';
 
-const Header = styled.div`
-  font-size: 40px;
-  text-align: center;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  background-color: black;
-  color: rgba(255, 255, 255, 0.829);
-`;
+// const Header = styled.div`
+//   font-size: 40px;
+//   text-align: center;
+//   padding-top: 20px;
+//   padding-bottom: 20px;
+//   background-color: black;
+//   color: rgba(255, 255, 255, 0.829);
+// `;
 
-const Home = styled.div`
-  background-size: 100%;
-  background-position: top;
-  height: 100vh;
-`;
+// const Home = styled.div`
+//   background-size: 100%;
+//   background-position: top;
+//   height: 100vh;
+// `;
 
 const Container = styled.div`
   display: flex;
 `;
 
-const DropContainer = styled.div`
-  background-color: #e1f2fb;
-  margin: 5px;
-  border: 1px double lightgray;
-  border-radius: 5%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;
-const Title = styled.h3`
-  padding: 8px;
-`;
-const CourseList = styled.div<any>`
-  padding: 10px;
-  background-color: ${(props: any) =>
-    props.isDraggingOver ? '#e0e0e0' : '#fff'};
-  flex: 1;
-  min-height: 50%;
-`;
+// const DropContainer = styled.div`
+//   background-color: #e1f2fb;
+//   margin: 5px;
+//   border: 1px double lightgray;
+//   border-radius: 5%;
+//   flex: 1;
+//   display: flex;
+//   flex-direction: column;
+// `;
+// const Title = styled.h3`
+//   padding: 8px;
+// `;
+// const CourseList = styled.div<any>`
+//   padding: 10px;
+//   background-color: ${(props: any) =>
+//     props.isDraggingOver ? '#e0e0e0' : '#fff'};
+//   flex: 1;
+//   min-height: 50%;
+// `;
 
-const CourseContainer = styled.div<any>`
-  border: 1px solid #bbded6;
-  border-radius: 10%;
-  padding: 8px;
-  margin-bottom: 8px;
-  background-color: ${(props: any) => (props.isDragging ? '#8AC6D1' : '#fff')};
-  display: flex;
-`;
+// const CourseContainer = styled.div<any>`
+//   border: 1px solid #bbded6;
+//   border-radius: 10%;
+//   padding: 8px;
+//   margin-bottom: 8px;
+//   background-color: ${(props: any) => (props.isDragging ? '#8AC6D1' : '#fff')};
+//   display: flex;
+// `;
 
-const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-  padding: 10,
-  background: isDragging ? '#4a2975' : 'white',
-  color: isDragging ? 'white' : 'black',
+// const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
+//   padding: 10,
+//   background: isDragging ? '#4a2975' : 'white',
+//   color: isDragging ? 'white' : 'black',
 
-  ...draggableStyle,
-});
+//   ...draggableStyle,
+// });
 
 function Planner() {
   const [user, loading, authError] = useAuthState(auth);
@@ -137,27 +137,29 @@ function Planner() {
           }
         })
   
-        setColumns({
-          ...columns,
-          'summer': {
-            id: "summer",
-            title: 'Summer 1 & 2',
-            courseIds: summerCourses,
-          },
-          'spring': {
-            id: "spring",
-            title: 'Spring',
-            courseIds: springCourses,
-          },
-          'winter': {
-            id: "winter",
-            title: 'Winter-mester',
-            courseIds: winterCourses,
-          },
-          'fall': {
-            id: "fall",
-            title: 'Fall',
-            courseIds: fallCourses,
+        setColumns((columns) => {
+          return {
+            ...columns,
+            'summer': {
+              id: "summer",
+              title: 'Summer 1 & 2',
+              courseIds: summerCourses,
+            },
+            'spring': {
+              id: "spring",
+              title: 'Spring',
+              courseIds: springCourses,
+            },
+            'winter': {
+              id: "winter",
+              title: 'Winter-mester',
+              courseIds: winterCourses,
+            },
+            'fall': {
+              id: "fall",
+              title: 'Fall',
+              courseIds: fallCourses,
+            }
           }
         });
         
@@ -172,7 +174,7 @@ function Planner() {
     if (unsubscribe === null) return;
 
     return unsubscribe;
-  });
+  }, [year]);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -187,13 +189,15 @@ function Planner() {
         return course.courseId;
       })
 
-      setColumns({
-        ...columns,
-        'allCourses': {
-          id: "allCourses",
-          title: 'Course List',
-          courseIds: allCourseIds,
-        },
+      setColumns((columns) => {
+        return {
+          ...columns,
+          'allCourses': {
+            id: "allCourses",
+            title: 'Course List',
+            courseIds: allCourseIds,
+          },
+        }
       })
 
     }
@@ -204,7 +208,7 @@ function Planner() {
       fetchCourses();
     }
     
-  }, [user, loading, navigate, columns]);
+  }, [user, loading, navigate]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const onChange = (event: any) => {
