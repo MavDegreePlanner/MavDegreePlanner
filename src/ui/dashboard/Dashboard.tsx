@@ -29,10 +29,17 @@ function Dashboard() {
       }
     };
 
-    if (loading) return;
-    if (!user) return navigate(kNavigateOnNotAuthenticated);
-    fetchUserName();
-  }, [user, loading, navigate]);
+    if (loading) {
+
+    }
+    else if (authError) {
+      console.warn(authError.message)
+    }
+    else if (!user) {
+      navigate(kNavigateOnNotAuthenticated);
+      fetchUserName();
+    }
+  }, [user, loading, authError, navigate]);
 
   return (
     <div className="dashboard">
