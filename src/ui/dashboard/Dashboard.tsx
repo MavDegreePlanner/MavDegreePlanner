@@ -13,6 +13,12 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (errorMessage.length > 0) {
+      // TODO: Show error message on screen
+    }
+  }, [errorMessage]);
+
+  useEffect(() => {
     const fetchUserName = async () => {
       try {
         const userData = await getUserData();
@@ -33,11 +39,12 @@ function Dashboard() {
 
     }
     else if (authError) {
-      console.warn(authError.message)
+      console.warn(authError.message);
     }
     else if (!user) {
       navigate(kNavigateOnNotAuthenticated);
-    } else {
+    }
+    else if (user) {
       fetchUserName();
     }
   }, [user, loading, authError, navigate]);

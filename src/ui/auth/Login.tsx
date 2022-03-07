@@ -17,13 +17,17 @@ export default function Login() {
 
   useEffect(() => {
     if (loading) {
+
     }
     else if (error) {
-      console.log(error.message);
+      console.warn(error.message);
+    }
+    else if (!user) {
+
     }
     else if (user) {
-      navigate(kNavigateOnAuthenticated)
-    };
+      navigate(kNavigateOnAuthenticated);
+    }
   }, [user, loading, error, navigate]);
 
   const handleSubmit = (e: any) => {

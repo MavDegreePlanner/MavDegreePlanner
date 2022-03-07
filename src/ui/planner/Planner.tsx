@@ -206,14 +206,20 @@ function Planner() {
       }
 
     }
-    if (loading) return;
-    if (!user) return navigate(kNavigateOnNotAuthenticated);
+    if (loading) {
 
-    if (user) {
+    }
+    else if (authError) {
+      console.warn(authError.message)
+    }
+    else if (!user) {
+      navigate(kNavigateOnNotAuthenticated);
+    }
+    else if (user) {
       fetchCourses();
     }
     
-  }, [user, loading, navigate]);
+  }, [user, loading, authError, navigate]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const onChange = (event: any) => {
