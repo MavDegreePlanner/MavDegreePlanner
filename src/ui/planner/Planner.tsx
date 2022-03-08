@@ -127,6 +127,7 @@ function Planner() {
 
   useEffect(() => {
     const fetchChosenCourses = async () => {
+      console.log('fetching chosen courses...');
       const userData = await getUserData();
       if (userData === null) return;
 
@@ -182,6 +183,7 @@ function Planner() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+        console.log('fetching courses...');
         const courses = await getAllCoursesObject();
         if (courses === null) {
           return;
@@ -218,7 +220,7 @@ function Planner() {
       console.warn(authError.message)
     }
     else if (!user) {
-      navigate(kNavigateOnNotAuthenticated);
+      navigate(kNavigateOnNotAuthenticated, { replace: true });
     }
     else if (user) {
       fetchCourses();

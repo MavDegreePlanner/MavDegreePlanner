@@ -42,7 +42,7 @@ function Dashboard() {
       console.warn(authError.message);
     }
     else if (!user) {
-      navigate(kNavigateOnNotAuthenticated);
+      navigate(kNavigateOnNotAuthenticated, { replace: true });
     }
     else if (user) {
       fetchUserName();
@@ -55,10 +55,7 @@ function Dashboard() {
         Logged in as
         <div>{name}</div>
         <div>{user?.email}</div>
-        <button className="dashboard__btn" onClick={async () => {
-          await logout();
-          navigate(kNavigateOnNotAuthenticated);
-        }}>
+        <button className="dashboard__btn" onClick={logout}>
           Logout
         </button>
       </div>
