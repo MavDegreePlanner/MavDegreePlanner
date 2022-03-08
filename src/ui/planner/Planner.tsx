@@ -134,17 +134,6 @@ function Planner() {
         if (courses === null) {
           return;
         }
-  
-        setColumns((columns) => {
-          return {
-            ...columns,
-            'allCourses': {
-              id: "allCourses",
-              title: 'Course List',
-              courses: courses,
-            },
-          }
-        });
 
         return courses;
       } catch (e) {
@@ -167,6 +156,17 @@ function Planner() {
       setLoading(false);
       if (userData === null) {
         setAllCourses(allCourses);
+  
+        setColumns((columns) => {
+          return {
+            ...columns,
+            'allCourses': {
+              id: "allCourses",
+              title: 'Course List',
+              courses: allCourses,
+            },
+          }
+        });
         return;
       };
 
@@ -199,6 +199,17 @@ function Planner() {
       })
       
       setAllCourses(allCourses);
+  
+      setColumns((columns) => {
+        return {
+          ...columns,
+          'allCourses': {
+            id: "allCourses",
+            title: 'Course List',
+            courses: allCourses,
+          },
+        }
+      });
 
       setColumns((columns) => {
         return {
