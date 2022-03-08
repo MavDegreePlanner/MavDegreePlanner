@@ -12,7 +12,7 @@ import {
 import Column from './Column';
 // import CourseReact from './CourseReact';
 import styled from 'styled-components';
-import { getAllCoursesObject, getUserData, modifyUserChosenCourse, removeUserChosenCourse } from '../../service/DatabaseService';
+import { getAllCourses, getUserData, modifyUserChosenCourse, removeUserChosenCourse } from '../../service/DatabaseService';
 import { Course } from '../../models/Course';
 import { kNavigateOnNotAuthenticated } from '../../Constants';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -130,7 +130,7 @@ function Planner() {
     const fetchAllCourses = async () : Promise<Course[] | undefined> =>  {
       try {
         console.log('fetching courses...');
-        const courses = await getAllCoursesObject();
+        const courses = await getAllCourses();
         if (courses === null) {
           return;
         }
