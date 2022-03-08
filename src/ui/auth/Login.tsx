@@ -36,7 +36,7 @@ export default function Login() {
   };
 
   async function loginUser() {
-    console.log(email + ': ' + password);
+    console.log(email);
     await logInWithEmailAndPassword(email, password);
     console.log('Logged in');
   }
