@@ -159,25 +159,11 @@ const userDataDocument = (userId: string) => doc(db, 'users', userId).withConver
 const allCoursesCollection = collection(db, 'allCourses').withConverter(allCoursesConverter);
 
 /**
- * @deprecated Since version Feb 20, 2022. Will be deleted soon. Use `getAllCoursesObject` instead.
- */
-const getAllCourses = async (): Promise<DocumentData[] | null> => {
-  const allCoursesCol = collection(db, 'allCourses');
-  return await getDocs(allCoursesCol)
-    .then((snapshot) => {
-      return snapshot.docs.map((doc) => doc.data());
-    })
-    .catch((error) => {
-      return null;
-    });
-};
-
-/**
  * Retrieve all available courses from Firestore
  * @returns Courses
  * @throws FirestoreError
  */
-const getAllCoursesObject = async (): Promise<Course[] | null> => {
+const getAllCourses = async (): Promise<Course[] | null> => {
   const courses: Course[] | null = await getDoc(doc(db, 'data/allCourses'))
     .then((snapshot: DocumentSnapshot<DocumentData>) => {
       const data = snapshot.data()
@@ -359,7 +345,6 @@ export {
   db,
   userDataDocument,
   getAllCourses,
-  getAllCoursesObject,
   getUserData,
   setUserData,
   streamUserData,
