@@ -14,7 +14,8 @@ import {
   setDoc,
   onSnapshot,
   FirestoreError,
-  SnapshotOptions
+  SnapshotOptions,
+  updateDoc
 } from 'firebase/firestore';
 import { Availability } from '../models/Availability';
 import { Major, majorEnumFromString } from '../models/MajorEnum';
@@ -64,6 +65,7 @@ const userDataConverter = {
         const chosenCourse = new ChosenCourse(
           chosenCourseMap.courseId,
           chosenCourseMap.semester,
+          chosenCourseMap.year,
         );
         chosenCourses.push(chosenCourse);
       }
@@ -157,41 +159,83 @@ const userDataDocument = (userId: string) => doc(db, 'users', userId).withConver
 const allCoursesCollection = collection(db, 'allCourses').withConverter(allCoursesConverter);
 
 /**
- * @deprecated Since version Feb 20, 2022. Will be deleted soon. Use `getAllCoursesObject` instead.
- */
-const getAllCourses = async (): Promise<DocumentData[] | null> => {
-  const allCoursesCol = collection(db, 'allCourses');
-  return await getDocs(allCoursesCol)
-    .then((snapshot) => {
-      return snapshot.docs.map((doc) => doc.data());
-    })
-    .catch((error) => {
-      return null;
-    });
-};
-
-/**
  * Retrieve all available courses from Firestore
  * @returns Courses
+ * @throws FirestoreError
  */
-const getAllCoursesObject = async (): Promise<Course[] | null> => {
-  const courses : Course[] | null = await getDocs(allCoursesCollection)
-    .then((snapshot: QuerySnapshot<Course>) => {
-      let courses: Course[] = [];
-      for (let i = 0; i < snapshot.docs.length; i++) {
-        const documentSnapshot: QueryDocumentSnapshot<Course> | undefined = snapshot.docs.at(i);
-        if (documentSnapshot !== undefined && documentSnapshot.exists()) {
-          const data = documentSnapshot.data();
-          
-          courses.push(data);
+const getAllCourses = async (): Promise<Course[] | null> => {
+  const courses: Course[] | null = await getDoc(doc(db, 'data/allCourses'))
+    .then((snapshot: DocumentSnapshot<DocumentData>) => {
+      const data = snapshot.data()
+      if (data === undefined) return null;
+
+      const coursesJson = data.allCourses;
+      const coursesMap = JSON.parse(coursesJson);
+      const courses = coursesMap.map((data: any) => {
+        const availabilityMap = data.availability;
+        const availability = new Availability(
+          availabilityMap.fall,
+          availabilityMap.spring,
+          availabilityMap.summer,
+        );
+        const requiredInMajors: Major[] = [];
+        
+        for (let i = 0; i < data.requiredInMajors.length; i++) {
+          const major = majorEnumFromString(data.requiredInMajors[i]);
+          if (major !== undefined) {
+            requiredInMajors.push(major);
+          }
         }
-      }
-      return courses;
-    })
-    .catch((error) => {
-      alert(error.message)
-      return null;
-    })
+    
+        const course = new Course(
+          // snapshot.id,
+          data.firebaseId,
+          data.coreqIds,
+          data.prereqIds,
+          data.courseId,
+          data.courseNumber,
+          data.department,
+          data.description,
+          requiredInMajors,
+          availability,
+        );
+
+        return course;
+      });
+
+      return courses
+    });
+
+  // Commented out because it used too many read operations.
+  // Now using the data stored as a JSON string in Firestore `data/allCourses`'s allCourses field
+  // const courses: Course[] | null = await getDocs(allCoursesCollection)
+  //   .then((snapshot: QuerySnapshot<Course>) => {
+  //     let courses: Course[] = [];
+  //     for (let i = 0; i < snapshot.docs.length; i++) {
+  //       const documentSnapshot: QueryDocumentSnapshot<Course> | undefined = snapshot.docs.at(i);
+  //       if (documentSnapshot !== undefined && documentSnapshot.exists()) {
+  //         const data = documentSnapshot.data();
+          
+  //         courses.push(data);
+  //       }
+  //     }
+  //     return courses;
+  //   });
+  
+  // Returns firestore allCourses collection as a map
+  // const allCoursesCol = collection(db, 'allCourses');
+  // const coursesData = await getDocs(allCoursesCol)
+  //     .then((snapshot) => {
+  //       return snapshot.docs.map((doc) => {
+  //         const data = doc.data();
+  //         data.firebaseId = doc.id;
+  //         return data;
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       return null;
+  //     });
+  // console.log(JSON.stringify(coursesData))
   
   return courses;
 };
@@ -232,8 +276,60 @@ const setUserData = async (userData: UserData): Promise<boolean> => {
   return true;
 };
 
+
 /**
- * List to user data changes in Firebase Firestore. Returns [Unsubscribe] which can be used to stop listening for changes
+ * Update the user data with a new class
+ * @param userData 
+ * @returns success
+ * @throws FirestoreError
+ */
+const modifyUserChosenCourse = async (chosenCourse: ChosenCourse): Promise<boolean> => {
+  const userId = auth.currentUser?.uid;
+  if (userId === null || userId === undefined) return false;
+
+  const userData = await getUserData();
+  const currentChosenCourses = (userData?.chosenCourses ?? []).filter(
+    (currentChosenCourse) => currentChosenCourse.courseId !== chosenCourse.courseId,
+  );
+
+  await updateDoc(userDataDocument(userId), {
+    chosenCourses: [...currentChosenCourses.map((item) => item.toMap()), chosenCourse.toMap()]
+  }).catch((error) => {
+    alert(error.message)
+    return false;
+  });
+
+  return true;
+};
+
+
+/**
+ * Remove chosen course from user data
+ * @param userData 
+ * @returns success
+ * @throws FirestoreError
+ */
+const removeUserChosenCourse = async (courseId: string): Promise<boolean> => {
+  const userId = auth.currentUser?.uid;
+  if (userId === null || userId === undefined) return false;
+
+  const userData = await getUserData();
+  const chosenCourses = (userData?.chosenCourses ?? []).filter(
+    (currentChosenCourse) => currentChosenCourse.courseId !== courseId,
+  );
+
+  await updateDoc(userDataDocument(userId), {
+    chosenCourses: chosenCourses.map((item) => item.toMap())
+  }).catch((error) => {
+    alert(error.message)
+    return false;
+  });
+
+  return true;
+};
+
+/**
+ * Listen to user data changes in Firebase Firestore. Returns [Unsubscribe] which can be used to stop listening for changes
  * @param onUserData 
  * @param onError 
  * @param onComplete 
@@ -245,7 +341,7 @@ const streamUserData = (
   onComplete?: (() => void) | undefined,
 ) => {
   const userId = auth.currentUser?.uid;
-  if (userId === null || userId === undefined) return false;
+  if (userId === null || userId === undefined) return null;
 
   const unsubscribe = onSnapshot(userDataDocument(userId), {
     next: (snapshot: DocumentSnapshot<UserData>) => {
@@ -265,8 +361,9 @@ export {
   db,
   userDataDocument,
   getAllCourses,
-  getAllCoursesObject,
   getUserData,
   setUserData,
   streamUserData,
+  modifyUserChosenCourse,
+  removeUserChosenCourse,
 };

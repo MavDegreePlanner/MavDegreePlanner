@@ -8,6 +8,7 @@ import Login from './ui/auth/Login';
 import SignUp from './ui/auth/SignUp';
 import Dashboard from './ui/dashboard/Dashboard';
 import ForgotPassword from './ui/auth/ForgotPassword';
+import Planner from './ui/planner/Planner';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
+        <Route path="/Planner" element={<Planner />} />
       </Routes>
     </Router>
   );

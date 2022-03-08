@@ -30,14 +30,16 @@ export default function ForgotPassword() {
 
   useEffect(() => {
     if (loading) {
-      // TODO: trigger a loading screen
-      return;
+
     }
-    if (user) navigate(kNavigateOnAuthenticated);
-    if (authError) {
-      // TODO: Show authentication error on screen
-      alert(authError.message)
-      return;
+    else if (authError) {
+      console.warn(authError.message);
+    }
+    else if (!user) {
+
+    }
+    else if (user) {
+      navigate(kNavigateOnAuthenticated);
     }
   }, [user, loading, authError, navigate]);
 
