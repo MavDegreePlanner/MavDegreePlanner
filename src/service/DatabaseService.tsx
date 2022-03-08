@@ -178,19 +178,62 @@ const getAllCourses = async (): Promise<DocumentData[] | null> => {
  * @throws FirestoreError
  */
 const getAllCoursesObject = async (): Promise<Course[] | null> => {
-  const courses: Course[] | null = await getDocs(allCoursesCollection)
-    .then((snapshot: QuerySnapshot<Course>) => {
-      let courses: Course[] = [];
-      for (let i = 0; i < snapshot.docs.length; i++) {
-        const documentSnapshot: QueryDocumentSnapshot<Course> | undefined = snapshot.docs.at(i);
-        if (documentSnapshot !== undefined && documentSnapshot.exists()) {
-          const data = documentSnapshot.data();
-          
-          courses.push(data);
+  const courses: Course[] | null = await getDoc(doc(db, 'data/allCourses'))
+    .then((snapshot: DocumentSnapshot<DocumentData>) => {
+      const data = snapshot.data()
+      if (data === undefined) return null;
+
+      const coursesJson = data.allCourses;
+      const coursesMap = JSON.parse(coursesJson);
+      const courses = coursesMap.map((data: any) => {
+        const availabilityMap = data.availability;
+        const availability = new Availability(
+          availabilityMap.fall,
+          availabilityMap.spring,
+          availabilityMap.summer,
+        );
+        const requiredInMajors: Major[] = [];
+        
+        for (let i = 0; i < data.requiredInMajors.length; i++) {
+          const major = majorEnumFromString(data.requiredInMajors[i]);
+          if (major !== undefined) {
+            requiredInMajors.push(major);
+          }
         }
-      }
-      return courses;
+    
+        const course = new Course(
+          snapshot.id,
+          data.coreqIds,
+          data.prereqIds,
+          data.courseId,
+          data.courseNumber,
+          data.department,
+          data.description,
+          requiredInMajors,
+          availability,
+        );
+
+        return course;
+      });
+
+      return courses
     });
+
+  // Commented out because it used too many read operations.
+  // Now using the data stored as a JSON string in Firestore `data/allCourses`'s allCourses field
+  // const courses: Course[] | null = await getDocs(allCoursesCollection)
+  //   .then((snapshot: QuerySnapshot<Course>) => {
+  //     let courses: Course[] = [];
+  //     for (let i = 0; i < snapshot.docs.length; i++) {
+  //       const documentSnapshot: QueryDocumentSnapshot<Course> | undefined = snapshot.docs.at(i);
+  //       if (documentSnapshot !== undefined && documentSnapshot.exists()) {
+  //         const data = documentSnapshot.data();
+          
+  //         courses.push(data);
+  //       }
+  //     }
+  //     return courses;
+  //   });
   
   return courses;
 };
