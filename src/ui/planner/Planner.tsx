@@ -134,11 +134,6 @@ function Planner() {
         if (courses === null) {
           return;
         }
-
-        setAllCourses(courses);
-        // const allCourseIds = courses.map((course) => {
-        //   return course.courseId;
-        // });
   
         setColumns((columns) => {
           return {
@@ -165,21 +160,32 @@ function Planner() {
     const fetchChosenCourses = async () => {
       setLoading(true);
       const allCourses = await fetchAllCourses();
+      if (allCourses === undefined) return;
+
       console.log('fetching chosen courses...');
       const userData = await getUserData();
       setLoading(false);
-      if (userData === null || allCourses === undefined) return;
+      if (userData === null) {
+        setAllCourses(allCourses);
+        return;
+      };
 
       const summerCourses: Course[] = [];
       const springCourses: Course[] = [];
       const winterCourses: Course[] = [];
       const fallCourses: Course[] = [];
+
       userData.chosenCourses.forEach((chosenCourse) => {
         const fullChosenCourse = allCourses.find((course) => {
           return course.courseId === chosenCourse.courseId;
         });
 
         if (fullChosenCourse === undefined) return
+
+        const index = allCourses.indexOf(fullChosenCourse, 0);
+        if (index > -1) {
+          allCourses.splice(index, 1);
+        }
 
         if (chosenCourse.semester === 'summer' && chosenCourse.year === year) {
           summerCourses.push(fullChosenCourse);
@@ -191,6 +197,8 @@ function Planner() {
           fallCourses.push(fullChosenCourse);
         }
       })
+      
+      setAllCourses(allCourses);
 
       setColumns((columns) => {
         return {
@@ -283,6 +291,17 @@ function Planner() {
         ...columns,
         [newColumn.id]: newColumn,
       });
+
+      // Make firebase call to update data only if semester changed
+      if (newColumn.id === 'allCourses') {
+        removeUserChosenCourse(draggedCourse.courseId);
+      } else {
+        modifyUserChosenCourse(new ChosenCourse(
+          draggedCourse.courseId,
+          newColumn.id,
+          year,
+        ));
+      }
     }
     // Moving from one list to another
     else {
@@ -314,7 +333,11 @@ function Planner() {
       if (newFinishColumn.id === 'allCourses') {
         removeUserChosenCourse(draggedCourse.courseId);
       } else {
-        modifyUserChosenCourse(new ChosenCourse(draggedCourse.courseId, newFinishColumn.id, year));
+        modifyUserChosenCourse(new ChosenCourse(
+          draggedCourse.courseId,
+          newFinishColumn.id,
+          year,
+        ));
       }
     }
   };

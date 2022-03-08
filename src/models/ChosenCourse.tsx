@@ -1,5 +1,3 @@
-import { FieldValue } from "@firebase/firestore";
-
 export class ChosenCourse {
   readonly courseId: string;
   readonly semester: string;

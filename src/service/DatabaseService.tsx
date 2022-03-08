@@ -274,7 +274,7 @@ const removeUserChosenCourse = async (courseId: string): Promise<boolean> => {
   );
 
   await updateDoc(userDataDocument(userId), {
-    chosenCourses: chosenCourses
+    chosenCourses: chosenCourses.map((item) => item.toMap())
   }).catch((error) => {
     alert(error.message)
     return false;
