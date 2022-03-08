@@ -358,7 +358,8 @@ function Planner() {
                     || course.description.toLowerCase().includes(searchTerm.toLowerCase())
                     || course.courseId.toLowerCase().includes(searchTerm.toLowerCase())
                     || course.courseNumber.toString().includes(searchTerm.toLowerCase())
-                    || course.department.toString().includes(searchTerm.toLowerCase())
+                    || course.department.toLowerCase().includes(searchTerm.toLowerCase())
+                    || (course.courseId + " - " + course.description).toLowerCase().includes(searchTerm.toLowerCase())
                 });
               
               return (

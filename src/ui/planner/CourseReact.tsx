@@ -31,7 +31,7 @@ const CourseReact: React.FC<CourseProps> = ({ course, index }) => {
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
         >
-          {course.courseId}
+          {course.courseId + " - " + course.description}
         </Container>
       )}
     </Draggable>
