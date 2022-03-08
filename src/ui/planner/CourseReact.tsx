@@ -5,6 +5,7 @@ import {
   DraggableStateSnapshot
 } from "react-beautiful-dnd";
 import styled from "styled-components";
+import { Course } from "../../models/Course";
 
 const Container = styled.div<any>`
   border: 1px solid #bbded6;
@@ -16,13 +17,13 @@ const Container = styled.div<any>`
 `;
 
 interface CourseProps {
-  course: any;
-  index: any;
+  course: Course;
+  index: number;
 }
 
 const CourseReact: React.FC<CourseProps> = ({ course, index }) => {
   return (
-    <Draggable draggableId={course.id} index={index}>
+    <Draggable draggableId={course.firebaseId} index={index}>
       {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
         <Container
           {...provided.draggableProps}
@@ -30,7 +31,7 @@ const CourseReact: React.FC<CourseProps> = ({ course, index }) => {
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
         >
-          {course.courseNumber}
+          {course.courseId}
         </Container>
       )}
     </Draggable>

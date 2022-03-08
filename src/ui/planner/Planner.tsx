@@ -78,44 +78,45 @@ const Container = styled.div`
 // });
 
 function Planner() {
-  const [user, loading, authError] = useAuthState(auth);
+  const [user, authLoading, authError] = useAuthState(auth);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [columns, setColumns] = useState<{
     [key: string]: {
       id: string,
       title: string,
-      courseIds: string[],
+      courses: Course[],
     },
   }>({
     'allCourses': {
       id: "allCourses",
       title: 'Course List',
-      courseIds: [],
+      courses: [],
     },
     'summer': {
       id: "summer",
       title: 'Summer 1 & 2',
-      courseIds: [],
+      courses: [],
     },
     'spring': {
       id: "spring",
       title: 'Spring',
-      courseIds: [],
+      courses: [],
     },
     'winter': {
       id: "winter",
       title: 'Winter-mester',
-      courseIds: [],
+      courses: [],
     },
     'fall': {
       id: "fall",
       title: 'Fall',
-      courseIds: [],
+      courses: [],
     }
   });
   const [columnOrder, setColumnOrder] = useState<string[]>(['allCourses', 'summer', 'spring', 'winter', 'fall']);
   const [year, setYear] = useState<number>(2022);
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,24 +127,68 @@ function Planner() {
   }, [errorMessage]);
 
   useEffect(() => {
+    const fetchAllCourses = async () : Promise<Course[] | undefined> =>  {
+      try {
+        console.log('fetching courses...');
+        const courses = await getAllCoursesObject();
+        if (courses === null) {
+          return;
+        }
+
+        setAllCourses(courses);
+        // const allCourseIds = courses.map((course) => {
+        //   return course.courseId;
+        // });
+  
+        setColumns((columns) => {
+          return {
+            ...columns,
+            'allCourses': {
+              id: "allCourses",
+              title: 'Course List',
+              courses: courses,
+            },
+          }
+        });
+
+        return courses;
+      } catch (e) {
+        if (e instanceof FirestoreError) {
+          setErrorMessage('all-courses-get-failed')
+        } else {
+          setErrorMessage('all-courses-get-failed')
+        }
+        return;
+      }
+    }
+
     const fetchChosenCourses = async () => {
+      setLoading(true);
+      const allCourses = await fetchAllCourses();
       console.log('fetching chosen courses...');
       const userData = await getUserData();
-      if (userData === null) return;
+      setLoading(false);
+      if (userData === null || allCourses === undefined) return;
 
-      const summerCourses: string[] = [];
-      const springCourses: string[] = [];
-      const winterCourses: string[] = [];
-      const fallCourses: string[] = [];
-      userData.chosenCourses.forEach((course) => {
-        if (course.semester === 'summer' && course.year === year) {
-          summerCourses.push(course.courseId);
-        } else if (course.semester === 'spring' && course.year === year) {
-          springCourses.push(course.courseId);
-        } else if (course.semester === 'winter' && course.year === year) {
-          winterCourses.push(course.courseId);
-        } else if (course.semester === 'fall' && course.year === year) {
-          fallCourses.push(course.courseId);
+      const summerCourses: Course[] = [];
+      const springCourses: Course[] = [];
+      const winterCourses: Course[] = [];
+      const fallCourses: Course[] = [];
+      userData.chosenCourses.forEach((chosenCourse) => {
+        const fullChosenCourse = allCourses.find((course) => {
+          return course.courseId === chosenCourse.courseId;
+        });
+
+        if (fullChosenCourse === undefined) return
+
+        if (chosenCourse.semester === 'summer' && chosenCourse.year === year) {
+          summerCourses.push(fullChosenCourse);
+        } else if (chosenCourse.semester === 'spring' && chosenCourse.year === year) {
+          springCourses.push(fullChosenCourse);
+        } else if (chosenCourse.semester === 'winter' && chosenCourse.year === year) {
+          winterCourses.push(fullChosenCourse);
+        } else if (chosenCourse.semester === 'fall' && chosenCourse.year === year) {
+          fallCourses.push(fullChosenCourse);
         }
       })
 
@@ -153,22 +198,22 @@ function Planner() {
           'summer': {
             id: "summer",
             title: 'Summer 1 & 2',
-            courseIds: summerCourses,
+            courses: summerCourses,
           },
           'spring': {
             id: "spring",
             title: 'Spring',
-            courseIds: springCourses,
+            courses: springCourses,
           },
           'winter': {
             id: "winter",
             title: 'Winter-mester',
-            courseIds: winterCourses,
+            courses: winterCourses,
           },
           'fall': {
             id: "fall",
             title: 'Fall',
-            courseIds: fallCourses,
+            courses: fallCourses,
           }
         }
       });
@@ -181,39 +226,8 @@ function Planner() {
   }, [year]);
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        console.log('fetching courses...');
-        const courses = await getAllCoursesObject();
-        if (courses === null) {
-          return;
-        }
-  
-        setAllCourses(courses);
-        const allCourseIds = courses.map((course) => {
-          return course.courseId;
-        });
-  
-        setColumns((columns) => {
-          return {
-            ...columns,
-            'allCourses': {
-              id: "allCourses",
-              title: 'Course List',
-              courseIds: allCourseIds,
-            },
-          }
-        });
-      } catch (e) {
-        if (e instanceof FirestoreError) {
-          setErrorMessage('all-courses-get-failed')
-        } else {
-          setErrorMessage('all-courses-get-failed')
-        }
-      }
-
-    }
-    if (loading) {
+    
+    if (authLoading) {
 
     }
     else if (authError) {
@@ -223,49 +237,15 @@ function Planner() {
       navigate(kNavigateOnNotAuthenticated, { replace: true });
     }
     else if (user) {
-      fetchCourses();
+
     }
     
-  }, [user, loading, authError, navigate]);
+  }, [user, authLoading, authError, navigate]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const onChange = (event: any) => {
     setSearchTerm(event.target.value);
   };
-  
-  // const [courseCatalog, setCourseCatalog] = useState<{
-  //   courseList: any;
-  //   columns: any;
-  //   columnOrder: string[];
-  // }>(initialData);
-
-  // useEffect(() => {
-  //   const fetchCourse = async () => {
-      
-  //     const event = query(collection(db, 'allCourses'));
-  //     const querySnapShot = await getDocs(event);
-  //     const tempList: any = [];
-
-  //     querySnapShot.forEach((doc) => {
-  //       tempList.push({ id: doc.id, ...doc.data() });
-  //     });
-
-  //     setCourseCatalog({
-  //       ...courseCatalog,
-  //       courseList: tempList,
-  //       columns: {
-  //         ...courseCatalog.columns,
-  //         allCourses: {
-  //           ...courseCatalog.columns.allCourses,
-  //           courseIds: tempList,
-  //         },
-  //       },
-  //     });
-  //   };
-
-  //   fetchCourse();
-    
-  // }, []);
 
   const onDragEnd = (result: DragUpdate) => {
     const { source, destination, draggableId } = result;
@@ -289,14 +269,14 @@ function Planner() {
     const finishColumn = columns[destination.droppableId];
 
     if (startColumn === finishColumn) {
-      const newCourseIds = Array.from(startColumn.courseIds);
-      const [draggedCourse] = newCourseIds.splice(source.index, 1);
+      const newCourses = Array.from(startColumn.courses);
+      const [draggedCourse] = newCourses.splice(source.index, 1);
 
-      newCourseIds.splice(destination.index, 0, draggedCourse);
+      newCourses.splice(destination.index, 0, draggedCourse);
 
       const newColumn = {
         ...startColumn,
-        courseIds: newCourseIds,
+        courses: newCourses,
       };
 
       setColumns({
@@ -306,21 +286,21 @@ function Planner() {
     }
     // Moving from one list to another
     else {
-      const startColumnCourseIds = Array.from(startColumn.courseIds);
-      const [draggedCourse] = startColumnCourseIds.splice(source.index, 1);
+      const startColumnCourses = Array.from(startColumn.courses);
+      const [draggedCourse] = startColumnCourses.splice(source.index, 1);
 
       const newStartColumn = {
         ...startColumn,
-        courseIds: startColumnCourseIds,
+        courses: startColumnCourses,
       };
 
-      const finishColumnCourseIds = Array.from(finishColumn.courseIds);
+      const finishColumnCourses = Array.from(finishColumn.courses);
 
-      finishColumnCourseIds.splice(destination.index, 0, draggedCourse);
+      finishColumnCourses.splice(destination.index, 0, draggedCourse);
 
       const newFinishColumn = {
         ...finishColumn,
-        courseIds: finishColumnCourseIds,
+        courses: finishColumnCourses,
       };
       
 
@@ -332,9 +312,9 @@ function Planner() {
 
       // Make firebase call to update data only if semester changed
       if (newFinishColumn.id === 'allCourses') {
-        removeUserChosenCourse(draggedCourse);
+        removeUserChosenCourse(draggedCourse.courseId);
       } else {
-        modifyUserChosenCourse(new ChosenCourse(draggedCourse, newFinishColumn.id, year));
+        modifyUserChosenCourse(new ChosenCourse(draggedCourse.courseId, newFinishColumn.id, year));
       }
     }
   };
@@ -349,19 +329,22 @@ function Planner() {
             if (columnId === 'allCourses') {
               const column = columns['allCourses'];
 
-              const filteredCourses = Object.keys(column.courseIds)
-                .filter((course: string) => {
-                  return searchTerm === '' ||
-                    course.toLowerCase().includes(searchTerm.toLowerCase())
+              const filteredCourses = column.courses
+                .filter((course) => {
+                  return searchTerm === ''
+                    || course.description.toLowerCase().includes(searchTerm.toLowerCase())
+                    || course.courseId.toLowerCase().includes(searchTerm.toLowerCase())
+                    || course.courseNumber.toString().includes(searchTerm.toLowerCase())
+                    || course.department.toString().includes(searchTerm.toLowerCase())
                 });
               
-                return (
-                  <Column
-                    key={column.id}
-                    column={column}
-                    courses={filteredCourses}
-                  />
-                );
+              return (
+                <Column
+                  key={column.id}
+                  column={column}
+                  courses={filteredCourses}
+                />
+              );
             }
             
             const column = columns[columnId];
@@ -370,7 +353,7 @@ function Planner() {
               <Column
                 key={column.id}
                 column={column}
-                courses={column.courseIds}
+                courses={column.courses}
               />
             );
           })}

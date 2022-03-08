@@ -248,7 +248,7 @@ const modifyUserChosenCourse = async (chosenCourse: ChosenCourse): Promise<boole
   );
 
   await updateDoc(userDataDocument(userId), {
-    chosenCourses: [...currentChosenCourses, chosenCourse]
+    chosenCourses: [...currentChosenCourses.map((item) => item.toMap()), chosenCourse.toMap()]
   }).catch((error) => {
     alert(error.message)
     return false;

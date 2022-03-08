@@ -1,5 +1,6 @@
 import { Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
+import { Course } from "../../models/Course";
 import CourseReact from "./CourseReact";
 
 const Container = styled.div`
@@ -28,9 +29,9 @@ interface ColumnProps {
   column: {
     id: string,
     title: string,
-    courseIds: string[],
+    courses: Course[],
   };
-  courses: string[];
+  courses: Course[];
 }
 
 const Column: React.FC<ColumnProps> = ({ column, courses }) => {
@@ -38,10 +39,10 @@ const Column: React.FC<ColumnProps> = ({ column, courses }) => {
     <Container>
       <Title>{column.title}</Title>
       <Droppable droppableId={column.id}>
-        {(provided: any) => (
+        {(provided) => (
           <CourseList ref={provided.innerRef} {...provided.droppableProps}>
-            {courses.map((course: any, index: number) => (
-              <CourseReact key={course.id} course={course} index={index} />
+            {courses.map((course, index) => (
+              <CourseReact key={course.firebaseId} course={course} index={index} />
             ))}
             {provided.placeholder}
           </CourseList>
