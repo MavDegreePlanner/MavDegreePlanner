@@ -190,14 +190,14 @@ const getAllCourses = async (): Promise<Course[] | null> => {
         const course = new Course(
           // snapshot.id,
           data.firebaseId,
-          data.coreqIds,
-          data.prereqIds,
-          data.courseId,
-          data.courseNumber,
-          data.department,
-          data.description,
-          requiredInMajors,
-          availability,
+          data.coreqIds ?? [],
+          data.prereqIds ?? [],
+          data.courseId ?? '',
+          data.courseNumber ?? -1,
+          data.department ?? '',
+          data.description ?? '',
+          requiredInMajors ?? [],
+          availability ?? new Availability(true, true, true),
         );
 
         return course;
