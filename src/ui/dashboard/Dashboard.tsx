@@ -48,10 +48,10 @@ function Dashboard() {
         setName(userData?.name ?? 'Not logged in')
       } catch (err) {
         if (err instanceof FirestoreError) {
-          console.error('user-data-get-failed');
+          console.error('user-data-get-failed', err);
           setErrorMessage('An error occured while fetching user data');
         } else {
-          console.error('user-data-get-failed');
+          console.error('user-data-get-failed', err);
           setErrorMessage('An error occured while fetching user data');
         }
         
