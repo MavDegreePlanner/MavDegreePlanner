@@ -18,7 +18,7 @@ export default function SignUp() {
   const [Name, setName] = useState<string>('');
   const [Sem, setSem] = useState<string>('Fall');
   const [Year, setYear] = useState<string>('2022');
-  const [Major, setMajor] = useState<string>('');
+  const [Major, setMajor] = useState<string>('SE');
 
   useEffect(() => {
     if (loading) {
@@ -162,7 +162,7 @@ export default function SignUp() {
                 className="selectbox"
                 required
                 value={Major}
-                onChange={(e) => setMajor(e.target.value)}
+                onChange={(e) => setMajor(e.target.textContent ?? 'SE')}
               >
                 <option value="1">SE</option>
                 <option value="2">CSE</option>
