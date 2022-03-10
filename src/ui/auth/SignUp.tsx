@@ -10,15 +10,15 @@ import './Login.css';
 export default function SignUp() {
   const navigate = useNavigate();
   const [user, loading, authError] = useAuthState(auth);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const [Email, setEmail] = useState('');
-  const [Password, setPassword] = useState('');
-  const [Password2, setPassword2] = useState('');
-  const [Name, setName] = useState('');
-  const [Sem, setSem] = useState('');
-  const [Year, setYear] = useState<string>('');
-  const [Major, setMajor] = useState('');
+  const [Email, setEmail] = useState<string>('');
+  const [Password, setPassword] = useState<string>('');
+  const [Password2, setPassword2] = useState<string>('');
+  const [Name, setName] = useState<string>('');
+  const [Sem, setSem] = useState<string>('Fall');
+  const [Year, setYear] = useState<string>('2022');
+  const [Major, setMajor] = useState<string>('');
 
   useEffect(() => {
     if (loading) {
@@ -68,8 +68,10 @@ export default function SignUp() {
       onError: (error) => {
         if (error instanceof FirebaseError) {
           setErrorMessage(`Sign up failed: ${error.message}`);
+          return;
         } else {
           setErrorMessage(`Sign up failed: ${error}`);
+          return;
         }
       }
     });
@@ -139,7 +141,7 @@ export default function SignUp() {
                 required
                 value={Sem}
                 onChange={(e) => {
-                  const semesterYear = e.target.value;
+                  const semesterYear = e.target.textContent ?? 'Fall 2022';
                   const semesterYearSplit = semesterYear.split(' ');
                   setSem(semesterYearSplit[0]);
                   setYear(semesterYearSplit[1]);
@@ -149,6 +151,7 @@ export default function SignUp() {
                 <option value="2">Spring 2019</option>
                 <option value="3">Fall 2020</option>
                 <option value="4">Spring 2021</option>
+                <option value="5">Fall 2022</option>
               </select>
             </div>
             <div className="formInfo">
