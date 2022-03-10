@@ -31,7 +31,7 @@ export default function SignUp() {
 
     }
     else if (user) {
-      navigate(kNavigateOnAuthenticated);
+
     }
   }, [user, loading, authError, navigate]);
 
@@ -58,7 +58,7 @@ export default function SignUp() {
     console.log(`Major: ${Major}`);
     console.log(`Semester: ${Sem}`);
     console.log(`Year: ${Year}`);
-    await registerWithEmailAndPassword({
+    const userCred = await registerWithEmailAndPassword({
       name: Name,
       email: Email,
       password: Password,
@@ -68,14 +68,17 @@ export default function SignUp() {
       onError: (error) => {
         if (error instanceof FirebaseError) {
           setErrorMessage(`Sign up failed: ${error.message}`);
-          return;
         } else {
           setErrorMessage(`Sign up failed: ${error}`);
-          return;
         }
       }
     });
-    console.log('Signed up');
+
+    if (userCred) {
+      console.log('Signed up');
+      navigate(kNavigateOnAuthenticated);
+    }
+
   }
 
   return (

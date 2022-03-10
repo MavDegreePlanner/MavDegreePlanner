@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  UserCredential,
 } from 'firebase/auth';
 import { setUserData } from './DatabaseService';
 import { UserData } from '../models/UserData';
@@ -79,8 +80,8 @@ const registerWithEmailAndPassword = async ({
   startingSemester,
   startingYear,
   onError,
-}: RegisterInterface) => {
-  await createUserWithEmailAndPassword(auth, email, password)
+}: RegisterInterface) :Promise<UserCredential | null> => {
+  const userCred = await createUserWithEmailAndPassword(auth, email, password)
     .then(async (userCred) => {
       const user = userCred.user;
       await setUserData(new UserData(
@@ -93,10 +94,14 @@ const registerWithEmailAndPassword = async ({
         [],
         [],
       ));
+      return userCred;
     })
     .catch((error: any) => {
       onError?.call(this, error) ?? alert(error.message);
+      return null;
     });
+  
+  return userCred;
 };
 
 /**
