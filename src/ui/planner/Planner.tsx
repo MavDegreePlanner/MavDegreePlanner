@@ -1,5 +1,5 @@
 // import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import {useRef, useState, useEffect } from 'react';
 import {
   DragDropContext,
   // Draggable,
@@ -12,7 +12,7 @@ import {
 import Column from './Column';
 // import CourseReact from './CourseReact';
 import styled from 'styled-components';
-import { getAllCourses, getUserData, modifyUserChosenCourse, removeUserChosenCourse } from '../../service/DatabaseService';
+import { getAllCourses, getUserData, modifyUserChosenCourse, removeUserChosenCourse, userDataDocument } from '../../service/DatabaseService';
 import { Course } from '../../models/Course';
 import { kNavigateOnNotAuthenticated } from '../../Constants';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -20,6 +20,8 @@ import { auth } from '../../service/AuthService';
 import { useNavigate } from 'react-router-dom';
 import { FirestoreError } from '@firebase/firestore';
 import { ChosenCourse } from '../../models/ChosenCourse';
+import Sidebar from './../Sidebar'
+
 
 // const Header = styled.div`
 //   font-size: 40px;
@@ -115,6 +117,12 @@ function Planner() {
     }
   });
   const [columnOrder, setColumnOrder] = useState<string[]>(['allCourses', 'summer', 'spring', 'winter', 'fall']);
+  
+  
+  
+  
+  const userDataYear = useRef(2022);
+  const [chosenYear, setChosenYear] = useState(2022);
   const [year, setYear] = useState<number>(2022);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -145,7 +153,7 @@ function Planner() {
         return;
       }
     }
-
+    
     const fetchChosenCourses = async () => {
       setLoading(true);
       const allCourses = await fetchAllCourses();
@@ -153,6 +161,7 @@ function Planner() {
 
       console.log('fetching chosen courses...');
       const userData = await getUserData();
+      
       setLoading(false);
       if (userData === null) {
         setAllCourses(allCourses);
@@ -169,7 +178,8 @@ function Planner() {
         });
         return;
       };
-
+      userDataYear.current = Number(userData.startingYear);
+      console.log("Year is: " + userDataYear.current)
       const summerCourses: Course[] = [];
       const springCourses: Course[] = [];
       const winterCourses: Course[] = [];
@@ -353,8 +363,51 @@ function Planner() {
     }
   };
 
+  // const fetchyear = async () => 
+  // {
+  //   const userDataYear = await getUserData();
+  //   const state = {
+  //     genres: [
+  //       { key: userDataYear.startingYear, value: "1", display: "Action" },
+  //       { key: 1001, value: "2", display: "Adventure" },
+  //       { key: 1002, value: "3", display: "Comedy" }
+  //     ],
+  //     selected: '' // A default value can be used here e.g., first element in genres
+  //   };
+  // }
+
+ 
+  const changeDegreeyear = (e: any) =>
+  {
+    setYear(e);
+    
+  };
+  
   return (
-    <div className="App">
+    <div className="App" style={{backgroundColor: "#c2b6b6",backgroundImage: "linear-gradient(315deg, #c2b6b6 0%, #576574 74%)"}}>
+      <Sidebar/>
+      <div>
+        <label>
+          Chosen Year
+        </label>
+        <select
+          className="selectbox_year"
+          required
+          value={chosenYear}
+          onChange={(e) => {
+            changeDegreeyear(e.target.value ?? 2022);
+            console.log("Chosen year: " + e.target.value);
+            userDataYear.current = Number(e.target.value)
+            setChosenYear(userDataYear.current)
+            console.log("Updated year: " + userDataYear.current);
+          }}
+        >
+          <option value={userDataYear.current}>{userDataYear.current}</option>
+          <option value={userDataYear.current + 1}>{userDataYear.current + 1}</option>
+          <option value={userDataYear.current + 2}>{userDataYear.current + 2}</option>
+          <option value={userDataYear.current + 3}>{userDataYear.current + 3}</option>
+        </select>
+      </div>
       {/* <Home><Header>MAV DEGREE PLANNER</Header></Home> */}
       <DragDropContext onDragEnd={onDragEnd}>
         <input placeholder="Search..." onChange={onChange} />

@@ -7,6 +7,8 @@ import { FirestoreError } from 'firebase/firestore';
 import { kNavigateOnNotAuthenticated } from '../../Constants';
 import { getUserData } from '../../service/DatabaseService';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import Sidebar from './../Sidebar'
+
 function Dashboard() {
   const [user, loading, authError] = useAuthState(auth);
   const [name, setName] = useState('');
@@ -84,7 +86,7 @@ function Dashboard() {
     //   </div>
     // </div>
     <div className='dashboard'>
-        
+        <Sidebar/>
         <div className="flowchart_types">
           <h1 className='title'>{title}</h1>
           <div className='degree_options'>
