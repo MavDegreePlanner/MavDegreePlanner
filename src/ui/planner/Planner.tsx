@@ -367,7 +367,7 @@ function Planner() {
           required
           value={chosenYear}
           onChange={(e) => {
-            changeDegreeyear(e.target.value ?? 2022);
+            changeDegreeyear(Number(e.target.value ?? '2022'));
             console.log("Chosen year: " + e.target.value);
             userDataYear.current = Number(e.target.value)
             setChosenYear(userDataYear.current)
