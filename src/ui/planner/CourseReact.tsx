@@ -7,13 +7,26 @@ import {
 import styled from "styled-components";
 import { Course } from "../../models/Course";
 
-const Container = styled.div<any>`
-  border: 1px solid #bbded6;
-  border-radius: 10%;
+export const Container = styled.div<any>`
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Work+Sans:wght@400;700&display=swap');
+  display: block;
+  border: 1px solid black;
   padding: 8px;
   margin-bottom: 8px;
-  background-color: ${(props: any) => (props.isDragging ? "#8AC6D1" : "#fff")};
-  display: flex;
+  box-shadow: ${(props: any) => (props.isDragging ? "0 0 40px #C1F4C5" : "")};
+  border: ${(props: any) => (props.isDragging ? "0.2rem solid #A6CF98" : "")};
+  & p {
+    font-family: "Work Sans", san-serif;
+    margin: 8px;
+    font-weight: normal;
+    font-size: 15px;
+  }
+  &:hover {
+    cursor: pointer;
+    background-color: #f9fcff;
+    background-image: linear-gradient(147deg, #f9fcff 0%, #dee4ea 74%);
+    border: 2px solid;
+  }
 `;
 
 interface CourseProps {
@@ -30,14 +43,19 @@ const CourseReact: React.FC<CourseProps> = ({ course, index }) => {
           {...provided.dragHandleProps}
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
+          aria-roledescription="Pree space bar to choose the course"
         >
-          {course.courseId + " - " + course.description}
+          <div style={{display: "flex", justifyContent: "space-around", borderBottom: "1px solid #36096d"}}>
+            <p style={{fontWeight: "bold"}}>{course.courseId}</p>
+            <p>|</p>
+            <p>{course.courseId.charAt(course.courseId.length - 3)} cr.</p>
+          </div>
+          <p>{course.description}</p>
+          {/* {course.courseId + " - " + course.description} */}
         </Container>
       )}
     </Draggable>
   );
 };
-
-
 
 export default CourseReact;

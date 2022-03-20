@@ -1,16 +1,13 @@
-// import { useNavigate } from 'react-router-dom';
 import {useRef, useState, useEffect } from 'react';
 import {
   DragDropContext,
-  // Draggable,
-  // DraggableProvided,
-  // DraggableStateSnapshot,
+  DragStart,
   DragUpdate,
-  // Droppable,
-  // DropResult,
+  Droppable,
+  ResponderProvided,
 } from 'react-beautiful-dnd';
-import Column from './Column';
-// import CourseReact from './CourseReact';
+import Column, {Container as ColumnContainer, Title as ColumnTitle, CourseList} from './Column';
+import CourseReact, {Container as CourseContainer} from './CourseReact';
 import styled from 'styled-components';
 import { getAllCourses, getUserData, modifyUserChosenCourse, removeUserChosenCourse, userDataDocument } from '../../service/DatabaseService';
 import { Course } from '../../models/Course';
@@ -22,62 +19,21 @@ import { FirestoreError } from '@firebase/firestore';
 import { ChosenCourse } from '../../models/ChosenCourse';
 import Sidebar from './../Sidebar'
 
-
-// const Header = styled.div`
-//   font-size: 40px;
-//   text-align: center;
-//   padding-top: 20px;
-//   padding-bottom: 20px;
-//   background-color: black;
-//   color: rgba(255, 255, 255, 0.829);
-// `;
-
-// const Home = styled.div`
-//   background-size: 100%;
-//   background-position: top;
-//   height: 100vh;
-// `;
-
 const Container = styled.div`
   display: flex;
 `;
 
-// const DropContainer = styled.div`
-//   background-color: #e1f2fb;
-//   margin: 5px;
-//   border: 1px double lightgray;
-//   border-radius: 5%;
-//   flex: 1;
-//   display: flex;
-//   flex-direction: column;
-// `;
-// const Title = styled.h3`
-//   padding: 8px;
-// `;
-// const CourseList = styled.div<any>`
-//   padding: 10px;
-//   background-color: ${(props: any) =>
-//     props.isDraggingOver ? '#e0e0e0' : '#fff'};
-//   flex: 1;
-//   min-height: 50%;
-// `;
-
-// const CourseContainer = styled.div<any>`
-//   border: 1px solid #bbded6;
-//   border-radius: 10%;
-//   padding: 8px;
-//   margin-bottom: 8px;
-//   background-color: ${(props: any) => (props.isDragging ? '#8AC6D1' : '#fff')};
-//   display: flex;
-// `;
-
-// const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-//   padding: 10,
-//   background: isDragging ? '#4a2975' : 'white',
-//   color: isDragging ? 'white' : 'black',
-
-//   ...draggableStyle,
-// });
+const SearchBar = styled.input`
+  margin: 10px;
+  width: 90%;
+  align-self: center;
+  &:focus {
+     transition: all 0.5s;
+     box-shadow: 0 0 40px  #1E56A0;
+     border-color: #163172;
+     outline: none;
+  }
+`;
 
 function Planner() {
   const [user, authLoading, authError] = useAuthState(auth);
@@ -117,9 +73,6 @@ function Planner() {
     }
   });
   const [columnOrder, setColumnOrder] = useState<string[]>(['allCourses', 'summer', 'spring', 'winter', 'fall']);
-  
-  
-  
   
   const userDataYear = useRef(2022);
   const [chosenYear, setChosenYear] = useState(2022);
@@ -276,8 +229,28 @@ function Planner() {
     setSearchTerm(event.target.value);
   };
 
-  const onDragEnd = (result: DragUpdate) => {
+  const onDragStart = (start: DragStart, provided: ResponderProvided) => {
+    provided.announce(`You have chosen a course at ${start.source.droppableId}`);
+  };
+
+  const onDragUpdate = (update: DragUpdate, provided: ResponderProvided) => {
+    const message = update.destination
+      ? `You have moved the course to position ${update.destination.droppableId}`
+      : `You are currently not over a droppable area`;
+
+    provided.announce(message);
+  }
+
+  const onDragEnd = (result: DragUpdate, provided: ResponderProvided) => {
     const { source, destination, draggableId } = result;
+
+    const message = result.destination
+      ? `You have moved the course from
+        ${source.droppableId} to ${result.destination.droppableId}`
+      : `The course has been returned to its starting position of
+        ${source.droppableId}`;
+      
+    provided.announce(message);
 
     // Check if destination is droppable area
     if (!destination) return;
@@ -297,6 +270,7 @@ function Planner() {
     const startColumn = columns[source.droppableId];
     const finishColumn = columns[destination.droppableId];
 
+    // Drag and drop within the same column
     if (startColumn === finishColumn) {
       const newCourses = Array.from(startColumn.courses);
       const [draggedCourse] = newCourses.splice(source.index, 1);
@@ -324,19 +298,17 @@ function Planner() {
         ));
       }
     }
-    // Moving from one list to another
+    // Moving from one column to another
     else {
       const startColumnCourses = Array.from(startColumn.courses);
       const [draggedCourse] = startColumnCourses.splice(source.index, 1);
-
+      const finishColumnCourses = Array.from(finishColumn.courses);
+      finishColumnCourses.splice(destination.index, 0, draggedCourse);
+      
       const newStartColumn = {
         ...startColumn,
         courses: startColumnCourses,
       };
-
-      const finishColumnCourses = Array.from(finishColumn.courses);
-
-      finishColumnCourses.splice(destination.index, 0, draggedCourse);
 
       const newFinishColumn = {
         ...finishColumn,
@@ -382,7 +354,7 @@ function Planner() {
     setYear(e);
     
   };
-  
+
   return (
     <div className="App" style={{backgroundColor: "#c2b6b6",backgroundImage: "linear-gradient(315deg, #c2b6b6 0%, #576574 74%)"}}>
       <Sidebar/>
@@ -408,9 +380,7 @@ function Planner() {
           <option value={userDataYear.current + 3}>{userDataYear.current + 3}</option>
         </select>
       </div>
-      {/* <Home><Header>MAV DEGREE PLANNER</Header></Home> */}
-      <DragDropContext onDragEnd={onDragEnd}>
-        <input placeholder="Search..." onChange={onChange} />
+      <DragDropContext onDragStart={onDragStart} onDragUpdate={onDragUpdate} onDragEnd={onDragEnd}>
         <Container>
           {columnOrder.map((columnId: string) => {
             if (columnId === 'allCourses') {
@@ -427,11 +397,20 @@ function Planner() {
                 });
               
               return (
-                <Column
-                  key={column.id}
-                  column={column}
-                  courses={filteredCourses}
-                />
+                <ColumnContainer style={{flex: 1.5, overflow : "auto", background: "white"}}>
+                  <ColumnTitle>{column.title}</ColumnTitle>
+                  <SearchBar type="search" placeholder="Search..." onChange={onChange} />
+                  <Droppable droppableId={column.id} isDropDisabled={false}>
+                    {(provided) => (
+                      <CourseList ref={provided.innerRef} {...provided.droppableProps}>
+                        {filteredCourses.map((course, index) => (
+                            <CourseReact key={course.firebaseId} course={course} index={index} />
+                        ))}
+                        {provided.placeholder}
+                      </CourseList>
+                    )}
+                  </Droppable>
+                </ColumnContainer> 
               );
             }
             
