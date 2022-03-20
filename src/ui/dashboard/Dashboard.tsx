@@ -2,17 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
-import { auth, logout } from './../../service/AuthService';
-import { FirestoreError } from 'firebase/firestore';
+import { auth } from './../../service/AuthService';
 import { kNavigateOnNotAuthenticated } from '../../Constants';
-import { getUserData } from '../../service/DatabaseService';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import Sidebar from './../Sidebar'
 
 function Dashboard() {
   const [user, loading, authError] = useAuthState(auth);
-  const [name, setName] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const [degree, setDegree] = useState("SE.jpg");
@@ -38,28 +34,6 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    if (errorMessage.length > 0) {
-      // TODO: Show error message on screen
-    }
-  }, [errorMessage]);
-
-  useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        const userData = await getUserData();
-        setName(userData?.name ?? 'Not logged in')
-      } catch (err) {
-        if (err instanceof FirestoreError) {
-          console.error('user-data-get-failed', err);
-          setErrorMessage('An error occured while fetching user data');
-        } else {
-          console.error('user-data-get-failed', err);
-          setErrorMessage('An error occured while fetching user data');
-        }
-        
-      }
-    };
-
     if (loading) {
 
     }
@@ -70,7 +44,6 @@ function Dashboard() {
       navigate(kNavigateOnNotAuthenticated, { replace: true });
     }
     else if (user) {
-      fetchUserName();
     }
   }, [user, loading, authError, navigate]);
 
