@@ -1,5 +1,7 @@
 # MavDegreePlanner
 
+Plan out your UTA CSE major with a simple drag and drop interface.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Firebase Setup
