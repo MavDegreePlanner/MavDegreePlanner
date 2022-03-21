@@ -349,10 +349,9 @@ function Planner() {
   // }
 
  
-  const changeDegreeyear = (e: any) =>
+  const changeDegreeyear = (e: number) =>
   {
     setYear(e);
-    
   };
 
   return (
