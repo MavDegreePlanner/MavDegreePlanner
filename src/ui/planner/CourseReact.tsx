@@ -25,7 +25,6 @@ export const Container = styled.div<any>`
     cursor: pointer;
     background-color: #f9fcff;
     background-image: linear-gradient(147deg, #f9fcff 0%, #dee4ea 74%);
-    border: 2px solid;
   }
 `;
 
