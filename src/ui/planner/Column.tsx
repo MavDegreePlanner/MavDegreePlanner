@@ -19,7 +19,8 @@ export const Container = styled.div`
 export const Title = styled.div`
   position: sticky;
   top: 0;
-  box-shadow: 10px 5px 5px black;
+  background-color: white;
+//   box-shadow: 10px 5px 5px black;
   border-bottom: 0.2rem solid #A6CF98;
   border-top: 0.2rem solid #A6CF98;
   border-color: #4E598C;
