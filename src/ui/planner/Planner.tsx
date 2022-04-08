@@ -35,10 +35,22 @@ const SearchBar = styled.input`
   }
 `;
 
+const ChosenYear = styled.div`
+  padding: 10px; 
+  margin: auto;
+  width: fit-content;
+  &:hover {
+    box-shadow: 0 0 100px black;
+    border-left: dashed;
+    border-right: dashed;
+ }
+`;
+
 function Planner() {
   const [user, authLoading, authError] = useAuthState(auth);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [coursesTaken, setCoursesTaken] = useState<ChosenCourse[]>([]);
   const [columns, setColumns] = useState<{
     [key: string]: {
       id: string,
@@ -78,6 +90,8 @@ function Planner() {
   const [chosenYear, setChosenYear] = useState(2022);
   const [year, setYear] = useState<number>(2022);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isDropDisabled, setIsDropDisabled] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -132,7 +146,8 @@ function Planner() {
         return;
       };
       userDataYear.current = Number(userData.startingYear);
-      console.log("Year is: " + userDataYear.current)
+      console.log("Year is: " + userDataYear.current);
+
       const summerCourses: Course[] = [];
       const springCourses: Course[] = [];
       const winterCourses: Course[] = [];
@@ -162,6 +177,7 @@ function Planner() {
       })
       
       setAllCourses(allCourses);
+      setCoursesTaken(userData.chosenCourses);
   
       setColumns((columns) => {
         return {
@@ -201,14 +217,21 @@ function Planner() {
       });
       
       // Set column order
-      setColumnOrder(['allCourses', 'summer', 'spring', 'winter', 'fall']);
+      setColumnOrder(['allCourses', 'spring', 'summer', 'fall', 'winter']);
     }
-
     fetchChosenCourses();
   }, [year]);
 
   useEffect(() => {
-    
+    const fetchCoursesTaken = async () => {
+      const userData = await getUserData();
+      if (userData === null) return;
+      setCoursesTaken(userData.chosenCourses);
+    }
+    fetchCoursesTaken();
+  }, [columns]);
+
+  useEffect(() => {
     if (authLoading) {
 
     }
@@ -230,20 +253,74 @@ function Planner() {
   };
 
   const onDragStart = (start: DragStart, provided: ResponderProvided) => {
+    setIsDropDisabled(false);
+    /*-------Screen reader support-------*/
     provided.announce(`You have chosen a course at ${start.source.droppableId}`);
+    /*-------Screen reader support-------*/ 
   };
 
   const onDragUpdate = (update: DragUpdate, provided: ResponderProvided) => {
+    /*-------Screen reader support-------*/
     const message = update.destination
       ? `You have moved the course to position ${update.destination.droppableId}`
       : `You are currently not over a droppable area`;
 
     provided.announce(message);
+    /*-------Screen reader support-------*/
+    const {source, destination} = update;
+    // Check if destination is droppable area
+    if (!destination) return;
+
+    // Check if the item is (actually) moved
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    if (columns === null) return;
+
+    const startColumn = columns[source.droppableId];
+    const finishColumn = columns[destination.droppableId];
+
+    const startColumnCourses = Array.from(startColumn.courses);
+    const [draggedCourse] = startColumnCourses.splice(source.index, 1);
+
+    const finishColumnCourses = Array.from(finishColumn.courses);
+    finishColumnCourses.splice(destination.index, 0, draggedCourse);
+
+    const index = columnOrder.indexOf(finishColumn.id);
+
+    if (draggedCourse.prereqIds.length === 0) {
+      setIsDropDisabled(false);
+    }
+    else {
+      let prereqPass = 0;
+      draggedCourse.prereqIds.forEach((prereq) => {
+        coursesTaken.forEach(course => {
+          if (prereq == course.courseId) {
+            if (course.year == year) {
+              const i = columnOrder.indexOf(course.semester);
+              if (i < index) prereqPass++;
+            }
+            else if (course.year < year) prereqPass++;
+          }
+        });
+      })
+      if (prereqPass == draggedCourse.prereqIds.length) {
+        setIsDropDisabled(false);
+      }
+      else {
+        setIsDropDisabled(true);
+
+      }
+    }
   }
 
   const onDragEnd = (result: DragUpdate, provided: ResponderProvided) => {
     const { source, destination, draggableId } = result;
-
+    /*-------Screen reader support-------*/
     const message = result.destination
       ? `You have moved the course from
         ${source.droppableId} to ${result.destination.droppableId}`
@@ -251,6 +328,7 @@ function Planner() {
         ${source.droppableId}`;
       
     provided.announce(message);
+    /*-------Screen reader support-------*/
 
     // Check if destination is droppable area
     if (!destination) return;
@@ -269,6 +347,8 @@ function Planner() {
     // finishColumn: where the item being dropped in
     const startColumn = columns[source.droppableId];
     const finishColumn = columns[destination.droppableId];
+
+    if (finishColumn.id == "allCourses") setIsDropDisabled(false);
 
     // Drag and drop within the same column
     if (startColumn === finishColumn) {
@@ -302,6 +382,7 @@ function Planner() {
     else {
       const startColumnCourses = Array.from(startColumn.courses);
       const [draggedCourse] = startColumnCourses.splice(source.index, 1);
+
       const finishColumnCourses = Array.from(finishColumn.courses);
       finishColumnCourses.splice(destination.index, 0, draggedCourse);
       
@@ -315,7 +396,6 @@ function Planner() {
         courses: finishColumnCourses,
       };
       
-
       setColumns({
         ...columns,
         [newStartColumn.id]: newStartColumn,
@@ -357,8 +437,8 @@ function Planner() {
   return (
     <div className="App" style={{backgroundColor: "#c2b6b6",backgroundImage: "linear-gradient(315deg, #c2b6b6 0%, #576574 74%)"}}>
       <Sidebar/>
-      <div>
-        <label>
+      <ChosenYear id="year">
+        <label style={{padding: "10px"}}>
           Chosen Year
         </label>
         <select
@@ -378,7 +458,8 @@ function Planner() {
           <option value={userDataYear.current + 2}>{userDataYear.current + 2}</option>
           <option value={userDataYear.current + 3}>{userDataYear.current + 3}</option>
         </select>
-      </div>
+      </ChosenYear>
+     
       <DragDropContext onDragStart={onDragStart} onDragUpdate={onDragUpdate} onDragEnd={onDragEnd}>
         <Container>
           {columnOrder.map((columnId: string) => {
@@ -399,7 +480,7 @@ function Planner() {
                 <ColumnContainer style={{flex: 1.5, overflow : "auto", background: "white"}}>
                   <ColumnTitle>{column.title}</ColumnTitle>
                   <SearchBar type="search" placeholder="Search..." onChange={onChange} />
-                  <Droppable droppableId={column.id} isDropDisabled={false}>
+                  <Droppable droppableId={column.id}>
                     {(provided) => (
                       <CourseList ref={provided.innerRef} {...provided.droppableProps}>
                         {filteredCourses.map((course, index) => (
@@ -412,16 +493,18 @@ function Planner() {
                 </ColumnContainer> 
               );
             }
-            
-            const column = columns[columnId];
-            
-            return (
-              <Column
-                key={column.id}
-                column={column}
-                courses={column.courses}
-              />
-            );
+            else {
+              const column = columns[columnId];
+              
+              return (
+                <Column
+                  key={column.id}
+                  column={column}
+                  courses={column.courses}
+                  isDropDisabled={isDropDisabled}
+                />
+              );
+            }
           })}
         </Container>
       </DragDropContext>

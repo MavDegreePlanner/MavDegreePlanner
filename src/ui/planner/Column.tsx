@@ -65,9 +65,10 @@ interface ColumnProps {
     courses: Course[],
   };
   courses: Course[];
+  isDropDisabled: boolean
 }
 
-const Column: React.FC<ColumnProps> = ({ column, courses }) => {
+const Column: React.FC<ColumnProps> = ({ column, courses, isDropDisabled }) => {
   const [hours, setHours] = useState(0);
 
   useEffect(() => {
@@ -81,7 +82,7 @@ const Column: React.FC<ColumnProps> = ({ column, courses }) => {
   return (
     <Container>
       <Title>{column.title}</Title>
-      <Droppable droppableId={column.id}>
+      <Droppable droppableId={column.id} isDropDisabled={isDropDisabled}>
         {(provided, snapshot) => (
           <CourseList ref={provided.innerRef} {...provided.droppableProps} isDraggingOver={snapshot.isDraggingOver}>
             {courses.map((course, index) => (
