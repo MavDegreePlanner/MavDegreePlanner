@@ -55,7 +55,7 @@ const CourseReact: React.FC<CourseProps> = ({ course, index }) => {
           {...provided.dragHandleProps}
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
-          aria-roledescription="Pree space bar to choose the course"
+          aria-roledescription="Press space bar to choose the course"
         >
           <span data-tip data-for="preReqTooltip" style={{display: "flex", justifyContent: "space-around", borderBottom: "1px solid #36096d"}}>
             <p style={{fontWeight: "bold"}}>{course.courseId}</p>
