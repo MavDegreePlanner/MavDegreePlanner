@@ -73,7 +73,7 @@ function Dashboard() {
       fetchUserName();
     }
   }, [user, loading, authError, navigate]);
-
+  
   return (
     // <div className="dashboard">
     //   <div className="dashboard__container">
@@ -85,6 +85,8 @@ function Dashboard() {
     //     </button>
     //   </div>
     // </div>
+
+    
     <div className='dashboard'>
         <Sidebar/>
         <div className="flowchart_types">

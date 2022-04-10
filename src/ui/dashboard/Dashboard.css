@@ -95,6 +95,7 @@
     padding-left: 5px;
     padding-right: 5px;
     background-color: azure;
+    border-radius: 5px;
 }
 .gg-zoom-in {
     box-sizing: border-box;

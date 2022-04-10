@@ -13,7 +13,6 @@ import "./Sidebar.css"
 import { IconContext } from 'react-icons'
 import { db, getAllCourses } from "../service/DatabaseService";
 
-
 function Sidebar() {
     const [sidebar, setSidebar] = useState(false)
     const showsidebar = () => setSidebar(!sidebar)
@@ -21,11 +20,16 @@ function Sidebar() {
     let r = getAllCourses()
     console.log(r)
 
+    const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
+    const [confirmDialog, setConfirmDialog] = useState({isOpen:false, title:''});
+    const [logoutPath, setLogoutPath] = useState('/Dashboard');
+
     // const handleClick = () => setClick(!click);//set opposite of click
 
     // const closeMobileMenu = () => setClick(false);
     const [user, loading, authError] = useAuthState(auth);
     const [name, setName] = useState('');
+    const [major, setMajor] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     useEffect(() => {
@@ -39,6 +43,7 @@ function Sidebar() {
           try {
             const userData = await getUserData();
             setName(userData?.name ?? 'Not logged in')
+            setMajor(userData?.major ?? 'Not logged in')
           } catch (err) {
             if (err instanceof FirestoreError) {
               console.error('user-data-get-failed', err);
@@ -65,7 +70,20 @@ function Sidebar() {
         }
       }, [user, loading, authError, navigate]);
 
-
+    const notifyLogout = () =>
+    {
+      if(window.confirm('Are you sure you want to Logout?'))
+      {
+        setNotify({
+          isOpen: true,
+          message:'Logged out Successfully',
+          type:'warning'
+        })
+        logout();
+        setLogoutPath('/');
+      }
+        
+    }
     return (
         <>
         <IconContext.Provider value={{ color: 'rgba(255, 255, 255, 0.829)' }}>
@@ -90,11 +108,11 @@ function Sidebar() {
                             </Link>
                         </li>
                         <li className='nav-item '>
-                            <Link to='/' className='nav-links' onClick={logout}>
+                            <Link to={logoutPath} className='nav-links' onClick={notifyLogout}>
                                 Logout
                             </Link>
                         </li>
-                    </ul>
+                    </ul>              
                 </nav>
                 <nav className={sidebar ? 'nav-menu1 active' : 'nav-menu1'}>
                     <div onClick={showsidebar} className="box">
@@ -104,22 +122,14 @@ function Sidebar() {
                             </Link>
                         </div>
                         <ul className="menu-items" >
-
-
-                            <li className="about">
-                                <Link to="#" className="list-items">
-                                    about
-                            </Link>
+                            <li className="user_info">
+                              Welcome {name}
                             </li>
-                            <li className="about">
-                                <Link to="#" className="list-items">
-                                    Info
-                            </Link>
+                            <li className="user_info">
+                              Major: {major}
                             </li>
-
                         </ul>
                     </div>
-
                 </nav>
             </div>
         </IconContext.Provider>
