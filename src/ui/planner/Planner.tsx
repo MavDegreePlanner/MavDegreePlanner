@@ -299,8 +299,8 @@ function Planner() {
       let prereqPass = 0;
       draggedCourse.prereqIds.forEach((prereq) => {
         coursesTaken.forEach(course => {
-          if (prereq == course.courseId) {
-            if (course.year == year) {
+          if (prereq === course.courseId) {
+            if (course.year === year) {
               const i = columnOrder.indexOf(course.semester);
               if (i < index) prereqPass++;
             }
@@ -308,7 +308,7 @@ function Planner() {
           }
         });
       })
-      if (prereqPass == draggedCourse.prereqIds.length) {
+      if (prereqPass === draggedCourse.prereqIds.length) {
         setIsDropDisabled(false);
       }
       else {
@@ -348,7 +348,7 @@ function Planner() {
     const startColumn = columns[source.droppableId];
     const finishColumn = columns[destination.droppableId];
 
-    if (finishColumn.id == "allCourses") setIsDropDisabled(false);
+    if (finishColumn.id === "allCourses") setIsDropDisabled(false);
 
     // Drag and drop within the same column
     if (startColumn === finishColumn) {
