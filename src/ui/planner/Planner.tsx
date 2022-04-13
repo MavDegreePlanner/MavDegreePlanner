@@ -277,6 +277,7 @@ function Planner() {
     // if (!destination) return;
 
     // Check if the item is (actually) moved
+<<<<<<< HEAD
     // if (
     //   destination.droppableId === source.droppableId &&
     //   destination.index === source.index
@@ -321,6 +322,52 @@ function Planner() {
     //   }
     // }
     // console.log("isDropDisable = ", isDropDisabled);
+=======
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    if (columns === null) return;
+
+    const startColumn = columns[source.droppableId];
+    const finishColumn = columns[destination.droppableId];
+
+    const startColumnCourses = Array.from(startColumn.courses);
+    const [draggedCourse] = startColumnCourses.splice(source.index, 1);
+
+    const finishColumnCourses = Array.from(finishColumn.courses);
+    finishColumnCourses.splice(destination.index, 0, draggedCourse);
+
+    const index = columnOrder.indexOf(finishColumn.id);
+
+    if (draggedCourse.prereqIds.length === 0) {
+      setIsDropDisabled(false);
+    }
+    else {
+      let prereqPass = 0;
+      draggedCourse.prereqIds.forEach((prereq) => {
+        coursesTaken.forEach(course => {
+          if (prereq === course.courseId) {
+            if (course.year === year) {
+              const i = columnOrder.indexOf(course.semester);
+              if (i < index) prereqPass++;
+            }
+            else if (course.year < year) prereqPass++;
+          }
+        });
+      })
+      if (prereqPass === draggedCourse.prereqIds.length) {
+        setIsDropDisabled(false);
+      }
+      else {
+        setIsDropDisabled(true);
+
+      }
+    }
+>>>>>>> 7e19b14acac5538c68d491968a032e252b3dcccc
   }
 
   const onDragEnd = (result: DragUpdate, provided: ResponderProvided) => {
@@ -353,7 +400,7 @@ function Planner() {
     const startColumn = columns[source.droppableId];
     const finishColumn = columns[destination.droppableId];
 
-    if (finishColumn.id == "allCourses") setIsDropDisabled(false);
+    if (finishColumn.id === "allCourses") setIsDropDisabled(false);
 
     // Drag and drop within the same column
     if (startColumn === finishColumn) {
