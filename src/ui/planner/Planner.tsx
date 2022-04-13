@@ -50,7 +50,8 @@ function Planner() {
   const [user, authLoading, authError] = useAuthState(auth);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [allCourses, setAllCourses] = useState<Course[]>([]);
-  const [coursesTaken, setCoursesTaken] = useState<ChosenCourse[]>([]);
+  // const [coursesTaken, setCoursesTaken] = useState<ChosenCourse[]>([]);
+  const takenRef = useRef<ChosenCourse[]>([]);
   const [columns, setColumns] = useState<{
     [key: string]: {
       id: string,
@@ -145,6 +146,9 @@ function Planner() {
         });
         return;
       };
+
+      takenRef.current = userData.chosenCourses;
+
       userDataYear.current = Number(userData.startingYear);
       console.log("Year is: " + userDataYear.current);
 
@@ -177,7 +181,7 @@ function Planner() {
       })
       
       setAllCourses(allCourses);
-      setCoursesTaken(userData.chosenCourses);
+      // setCoursesTaken(userData.chosenCourses);
   
       setColumns((columns) => {
         return {
@@ -222,14 +226,14 @@ function Planner() {
     fetchChosenCourses();
   }, [year]);
 
-  useEffect(() => {
-    const fetchCoursesTaken = async () => {
-      const userData = await getUserData();
-      if (userData === null) return;
-      setCoursesTaken(userData.chosenCourses);
-    }
-    fetchCoursesTaken();
-  }, [columns]);
+  // useEffect(() => {
+  //   const fetchCoursesTaken = async () => {
+  //     const userData = await getUserData();
+  //     if (userData === null) return;
+  //     setCoursesTaken(userData.chosenCourses);
+  //   }
+  //   fetchCoursesTaken();
+  // }, [columns]);
 
   useEffect(() => {
     if (authLoading) {
@@ -246,6 +250,7 @@ function Planner() {
     }
     
   }, [user, authLoading, authError, navigate]);
+
 
   const [searchTerm, setSearchTerm] = useState('');
   const onChange = (event: any) => {
@@ -267,55 +272,55 @@ function Planner() {
 
     provided.announce(message);
     /*-------Screen reader support-------*/
-    const {source, destination} = update;
+    // const {source, destination} = update;
     // Check if destination is droppable area
-    if (!destination) return;
+    // if (!destination) return;
 
     // Check if the item is (actually) moved
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
+    // if (
+    //   destination.droppableId === source.droppableId &&
+    //   destination.index === source.index
+    // ) {
+    //   return;
+    // }
 
-    if (columns === null) return;
+    // if (columns === null) return;
 
-    const startColumn = columns[source.droppableId];
-    const finishColumn = columns[destination.droppableId];
+    // const startColumn = columns[source.droppableId];
+    // const finishColumn = columns[destination.droppableId];
 
-    const startColumnCourses = Array.from(startColumn.courses);
-    const [draggedCourse] = startColumnCourses.splice(source.index, 1);
+    // const startColumnCourses = Array.from(startColumn.courses);
+    // const [draggedCourse] = startColumnCourses.splice(source.index, 1);
 
-    const finishColumnCourses = Array.from(finishColumn.courses);
-    finishColumnCourses.splice(destination.index, 0, draggedCourse);
+    // const finishColumnCourses = Array.from(finishColumn.courses);
+    // finishColumnCourses.splice(destination.index, 0, draggedCourse);
 
-    const index = columnOrder.indexOf(finishColumn.id);
+    // const index = columnOrder.indexOf(finishColumn.id);
 
-    if (draggedCourse.prereqIds.length === 0) {
-      setIsDropDisabled(false);
-    }
-    else {
-      let prereqPass = 0;
-      draggedCourse.prereqIds.forEach((prereq) => {
-        coursesTaken.forEach(course => {
-          if (prereq == course.courseId) {
-            if (course.year == year) {
-              const i = columnOrder.indexOf(course.semester);
-              if (i < index) prereqPass++;
-            }
-            else if (course.year < year) prereqPass++;
-          }
-        });
-      })
-      if (prereqPass == draggedCourse.prereqIds.length) {
-        setIsDropDisabled(false);
-      }
-      else {
-        setIsDropDisabled(true);
-
-      }
-    }
+    // if (draggedCourse.prereqIds.length === 0) {
+    //   setIsDropDisabled(false);
+    // }
+    // else {
+    //   let prereqPass = 0;
+    //   draggedCourse.prereqIds.forEach((prereq) => {
+    //     takenRef.current.forEach(course => {
+    //       if (prereq == course.courseId) {
+    //         if (course.year == year) {
+    //           const i = columnOrder.indexOf(course.semester);
+    //           if (i < index) prereqPass++;
+    //         }
+    //         else if (course.year < year) prereqPass++;
+    //       }
+    //     });
+    //   })
+    //   if (prereqPass === draggedCourse.prereqIds.length) {
+    //     setIsDropDisabled(false);
+    //   }
+    //   else {
+    //     setIsDropDisabled(true);
+    //   }
+    // }
+    // console.log("isDropDisable = ", isDropDisabled);
   }
 
   const onDragEnd = (result: DragUpdate, provided: ResponderProvided) => {
@@ -354,7 +359,6 @@ function Planner() {
     if (startColumn === finishColumn) {
       const newCourses = Array.from(startColumn.courses);
       const [draggedCourse] = newCourses.splice(source.index, 1);
-
       newCourses.splice(destination.index, 0, draggedCourse);
 
       const newColumn = {
@@ -370,6 +374,9 @@ function Planner() {
       // Make firebase call to update data only if semester changed
       if (newColumn.id === 'allCourses') {
         removeUserChosenCourse(draggedCourse.courseId);
+        takenRef.current = takenRef.current.filter((removeCourse => {
+          return removeCourse.courseId !== draggedCourse.courseId;
+        }))
       } else {
         modifyUserChosenCourse(new ChosenCourse(
           draggedCourse.courseId,
@@ -377,6 +384,7 @@ function Planner() {
           year,
         ));
       }
+      return;
     }
     // Moving from one column to another
     else {
@@ -385,6 +393,40 @@ function Planner() {
 
       const finishColumnCourses = Array.from(finishColumn.courses);
       finishColumnCourses.splice(destination.index, 0, draggedCourse);
+
+      const index = columnOrder.indexOf(finishColumn.id);
+
+      if (draggedCourse.prereqIds.length === 0 || finishColumn.id == "allCourses") {
+        setIsDropDisabled(false);
+      }
+      else {
+        let prereqPass = 0;
+        draggedCourse.prereqIds.forEach((prereq) => {
+          takenRef.current.forEach(course => {
+            if (prereq == course.courseId) {
+              if (course.year == year) {
+                const i = columnOrder.indexOf(course.semester);
+                if (i < index) prereqPass++;
+              }
+              else if (course.year < year) prereqPass++;
+            }
+          });
+        })
+        if (prereqPass === draggedCourse.prereqIds.length) {
+          setIsDropDisabled(false);
+        }
+        else {
+          var div = document.getElementById(draggedCourse.courseId);
+          if (div != null) div.style.background = "#FBD6D2";
+          setTimeout(() => {
+            if (div != null) div.style.background = "white";
+          }, 1500);
+
+          setIsDropDisabled(true);
+          return;
+        }
+      }
+      console.log("isDropDisable = ", isDropDisabled);
       
       const newStartColumn = {
         ...startColumn,
@@ -405,12 +447,18 @@ function Planner() {
       // Make firebase call to update data only if semester changed
       if (newFinishColumn.id === 'allCourses') {
         removeUserChosenCourse(draggedCourse.courseId);
+        takenRef.current = takenRef.current.filter((removeCourse => {
+          return removeCourse.courseId !== draggedCourse.courseId;
+        }))
       } else {
         modifyUserChosenCourse(new ChosenCourse(
           draggedCourse.courseId,
           newFinishColumn.id,
           year,
         ));
+        if ((takenRef.current.findIndex(existed => existed.courseId === draggedCourse.courseId) === -1)) {
+          takenRef.current.push(new ChosenCourse(draggedCourse.courseId, newFinishColumn.id, year));
+        }
       }
     }
   };
@@ -483,9 +531,9 @@ function Planner() {
                   <Droppable droppableId={column.id}>
                     {(provided) => (
                       <CourseList ref={provided.innerRef} {...provided.droppableProps}>
-                        {filteredCourses.map((course, index) => (
-                            <CourseReact key={course.firebaseId} course={course} index={index} />
-                        ))}
+                        {filteredCourses.map((course, index) => {
+                          return <CourseReact key={course.firebaseId} course={course} index={index} />
+                        })}
                         {provided.placeholder}
                       </CourseList>
                     )}

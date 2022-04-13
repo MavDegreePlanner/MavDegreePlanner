@@ -51,6 +51,7 @@ const CourseReact: React.FC<CourseProps> = ({ course, index }) => {
     <Draggable draggableId={course.firebaseId} index={index}>
       {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
         <Container
+          id={course.courseId}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
