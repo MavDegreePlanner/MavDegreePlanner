@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { FirestoreError } from '@firebase/firestore';
 import { ChosenCourse } from '../../models/ChosenCourse';
 import Sidebar from './../Sidebar'
+import ReactTooltip from "react-tooltip";
 
 const Container = styled.div`
   display: flex;
@@ -147,7 +148,16 @@ function Planner() {
         return;
       };
 
-      takenRef.current = userData.chosenCourses;
+      if (takenRef.current == null) {
+        takenRef.current = userData.chosenCourses;
+      }
+      else {
+        userData.chosenCourses.forEach((courseTaken) => {
+          if ((takenRef.current.findIndex(ifExisted => ifExisted.courseId === courseTaken.courseId) === -1)) {
+            takenRef.current.push(courseTaken);
+          }
+        })
+      }
 
       userDataYear.current = Number(userData.startingYear);
       console.log("Year is: " + userDataYear.current);
@@ -226,15 +236,6 @@ function Planner() {
     fetchChosenCourses();
   }, [year]);
 
-  // useEffect(() => {
-  //   const fetchCoursesTaken = async () => {
-  //     const userData = await getUserData();
-  //     if (userData === null) return;
-  //     setCoursesTaken(userData.chosenCourses);
-  //   }
-  //   fetchCoursesTaken();
-  // }, [columns]);
-
   useEffect(() => {
     if (authLoading) {
 
@@ -272,102 +273,6 @@ function Planner() {
 
     provided.announce(message);
     /*-------Screen reader support-------*/
-    // const {source, destination} = update;
-    // Check if destination is droppable area
-    // if (!destination) return;
-
-    // Check if the item is (actually) moved
-<<<<<<< HEAD
-    // if (
-    //   destination.droppableId === source.droppableId &&
-    //   destination.index === source.index
-    // ) {
-    //   return;
-    // }
-
-    // if (columns === null) return;
-
-    // const startColumn = columns[source.droppableId];
-    // const finishColumn = columns[destination.droppableId];
-
-    // const startColumnCourses = Array.from(startColumn.courses);
-    // const [draggedCourse] = startColumnCourses.splice(source.index, 1);
-
-    // const finishColumnCourses = Array.from(finishColumn.courses);
-    // finishColumnCourses.splice(destination.index, 0, draggedCourse);
-
-    // const index = columnOrder.indexOf(finishColumn.id);
-
-    // if (draggedCourse.prereqIds.length === 0) {
-    //   setIsDropDisabled(false);
-    // }
-    // else {
-    //   let prereqPass = 0;
-    //   draggedCourse.prereqIds.forEach((prereq) => {
-    //     takenRef.current.forEach(course => {
-    //       if (prereq == course.courseId) {
-    //         if (course.year == year) {
-    //           const i = columnOrder.indexOf(course.semester);
-    //           if (i < index) prereqPass++;
-    //         }
-    //         else if (course.year < year) prereqPass++;
-    //       }
-    //     });
-    //   })
-    //   if (prereqPass === draggedCourse.prereqIds.length) {
-    //     setIsDropDisabled(false);
-    //   }
-    //   else {
-    //     setIsDropDisabled(true);
-    //   }
-    // }
-    // console.log("isDropDisable = ", isDropDisabled);
-=======
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
-
-    if (columns === null) return;
-
-    const startColumn = columns[source.droppableId];
-    const finishColumn = columns[destination.droppableId];
-
-    const startColumnCourses = Array.from(startColumn.courses);
-    const [draggedCourse] = startColumnCourses.splice(source.index, 1);
-
-    const finishColumnCourses = Array.from(finishColumn.courses);
-    finishColumnCourses.splice(destination.index, 0, draggedCourse);
-
-    const index = columnOrder.indexOf(finishColumn.id);
-
-    if (draggedCourse.prereqIds.length === 0) {
-      setIsDropDisabled(false);
-    }
-    else {
-      let prereqPass = 0;
-      draggedCourse.prereqIds.forEach((prereq) => {
-        coursesTaken.forEach(course => {
-          if (prereq === course.courseId) {
-            if (course.year === year) {
-              const i = columnOrder.indexOf(course.semester);
-              if (i < index) prereqPass++;
-            }
-            else if (course.year < year) prereqPass++;
-          }
-        });
-      })
-      if (prereqPass === draggedCourse.prereqIds.length) {
-        setIsDropDisabled(false);
-      }
-      else {
-        setIsDropDisabled(true);
-
-      }
-    }
->>>>>>> 7e19b14acac5538c68d491968a032e252b3dcccc
   }
 
   const onDragEnd = (result: DragUpdate, provided: ResponderProvided) => {
@@ -443,6 +348,7 @@ function Planner() {
 
       const index = columnOrder.indexOf(finishColumn.id);
 
+      /************* PREREQUISITE CHECKING ****************/
       if (draggedCourse.prereqIds.length === 0 || finishColumn.id == "allCourses") {
         setIsDropDisabled(false);
       }
@@ -464,16 +370,35 @@ function Planner() {
         }
         else {
           var div = document.getElementById(draggedCourse.courseId);
-          if (div != null) div.style.background = "#FBD6D2";
+          if (div != null) div.style.border = "2px solid #FF5F00";
           setTimeout(() => {
-            if (div != null) div.style.background = "white";
-          }, 1500);
+            if (div != null) div.style.border = "1px solid black";
+          }, 2000);
 
           setIsDropDisabled(true);
           return;
         }
       }
-      console.log("isDropDisable = ", isDropDisabled);
+      console.log("isDropDisabled = ", isDropDisabled);
+      /************* PREREQUISITE CHECKING ****************/
+
+      /************* COREQUISITE CHECKING ****************/
+      if (finishColumn.id !== "allCourses") {
+        draggedCourse.coreqIds.forEach((ifCoreq) => {
+          if (ifCoreq !== null && (takenRef.current.findIndex(existed => existed.courseId === ifCoreq) === -1)) {
+            let index = 0;
+            for (var i = 0 ; i < startColumnCourses.length ; i++) {
+              if (startColumnCourses[i].courseId === ifCoreq) {
+                index = i;
+              }
+            }
+            const [coreq] = startColumnCourses.splice(index, 1);
+            console.log(coreq, index);
+            finishColumnCourses.splice(destination.index, 0, coreq);
+          }
+        })
+      }
+      /************* COREQUISITE CHECKING ****************/
       
       const newStartColumn = {
         ...startColumn,
@@ -578,9 +503,9 @@ function Planner() {
                   <Droppable droppableId={column.id}>
                     {(provided) => (
                       <CourseList ref={provided.innerRef} {...provided.droppableProps}>
-                        {filteredCourses.map((course, index) => {
-                          return <CourseReact key={course.firebaseId} course={course} index={index} />
-                        })}
+                        {filteredCourses.map((course, index) => (
+                          <CourseReact key={course.firebaseId} course={course} index={index} />
+                        ))}
                         {provided.placeholder}
                       </CourseList>
                     )}
