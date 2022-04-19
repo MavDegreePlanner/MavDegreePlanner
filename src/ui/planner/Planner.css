@@ -1,0 +1,15 @@
+
+.selectbox_year {
+  background: #fafafa;
+  color: #414141;
+  display: inline;
+  cursor: pointer;
+  border-top: 0.2rem solid #4E598C;
+  border-bottom: 0.2rem solid #4E598C;
+  text-shadow: 2px 2px 1px #537895;
+  letter-spacing: 2.5px;
+  font-weight: bold;
+  color: black;
+  font-size: 20px;
+}
+

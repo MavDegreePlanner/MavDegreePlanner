@@ -19,7 +19,7 @@ import { FirestoreError } from '@firebase/firestore';
 import { ChosenCourse } from '../../models/ChosenCourse';
 import Sidebar from './../Sidebar'
 import ReactTooltip from "react-tooltip";
-
+import './Planner.css';
 const Container = styled.div`
   display: flex;
 `;
@@ -39,6 +39,9 @@ const SearchBar = styled.input`
 const ChosenYear = styled.div`
   padding: 10px; 
   margin: auto;
+  font-size: 22px;
+  font-weight: bold;
+  text-shadow: 2px 2px 1px #647885;
   width: fit-content;
   &:hover {
     box-shadow: 0 0 100px black;
@@ -46,6 +49,7 @@ const ChosenYear = styled.div`
     border-right: dashed;
  }
 `;
+
 
 function Planner() {
   const [user, authLoading, authError] = useAuthState(auth);
@@ -458,8 +462,8 @@ function Planner() {
     <div className="App" style={{backgroundColor: "#c2b6b6",backgroundImage: "linear-gradient(315deg, #c2b6b6 0%, #576574 74%)"}}>
       <Sidebar/>
       <ChosenYear id="year">
-        <label style={{padding: "10px"}}>
-          Chosen Year
+        <label style={{padding:"10px"}}>
+          CURRENT YEAR:
         </label>
         <select
           className="selectbox_year"
