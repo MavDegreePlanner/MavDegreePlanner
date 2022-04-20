@@ -281,6 +281,7 @@ function Planner() {
 
   const onDragEnd = (result: DragUpdate, provided: ResponderProvided) => {
     const { source, destination, draggableId } = result;
+    console.log(draggableId);
     /*-------Screen reader support-------*/
     const message = result.destination
       ? `You have moved the course from
@@ -314,7 +315,13 @@ function Planner() {
     // Drag and drop within the same column
     if (startColumn === finishColumn) {
       const newCourses = Array.from(startColumn.courses);
-      const [draggedCourse] = newCourses.splice(source.index, 1);
+      const draggedCourse = newCourses.find((course) => {
+        return course.firebaseId === draggableId
+      })
+      if (draggedCourse === undefined) {
+        console.log('ERROR: UNABLE TO FIND DROPPED COURSE');
+        return;
+      }
       newCourses.splice(destination.index, 0, draggedCourse);
 
       const newColumn = {
@@ -353,15 +360,15 @@ function Planner() {
       const index = columnOrder.indexOf(finishColumn.id);
 
       /************* PREREQUISITE CHECKING ****************/
-      if (draggedCourse.prereqIds.length === 0 || finishColumn.id == "allCourses") {
+      if (draggedCourse.prereqIds.length === 0 || finishColumn.id === "allCourses") {
         setIsDropDisabled(false);
       }
       else {
         let prereqPass = 0;
         draggedCourse.prereqIds.forEach((prereq) => {
           takenRef.current.forEach(course => {
-            if (prereq == course.courseId) {
-              if (course.year == year) {
+            if (prereq === course.courseId) {
+              if (course.year === year) {
                 const i = columnOrder.indexOf(course.semester);
                 if (i < index) prereqPass++;
               }
