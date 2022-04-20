@@ -11,15 +11,15 @@ import * as AiIcons from "react-icons/ai"
 import "./Navbar.css"
 import "./Sidebar.css"
 import { IconContext } from 'react-icons'
-import { db, getAllCourses } from "../service/DatabaseService";
 
 
 function Sidebar() {
     const [sidebar, setSidebar] = useState(false)
     const showsidebar = () => setSidebar(!sidebar)
     const [click, setClick] = useState(false);
-    let r = getAllCourses()
-    console.log(r)
+    // DO NOT USE getAllCourses() IN THIS FUNCTION DIRECTLY
+    // let r = getAllCourses()
+    // console.log(r)
 
     // const handleClick = () => setClick(!click);//set opposite of click
 
