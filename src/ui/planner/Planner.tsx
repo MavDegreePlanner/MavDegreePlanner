@@ -317,8 +317,10 @@ function Planner() {
       const draggedCourse = newCourses.find((course) => {
         return course.firebaseId === draggableId
       })
+      console.log(draggedCourse)
       if (draggedCourse === undefined) {
         console.log('ERROR: UNABLE TO FIND DROPPED COURSE');
+        setIsDropDisabled(true);
         return;
       }
       newCourses.splice(destination.index, 0, draggedCourse);
@@ -351,7 +353,14 @@ function Planner() {
     // Moving from one column to another
     else {
       const startColumnCourses = Array.from(startColumn.courses);
-      const [draggedCourse] = startColumnCourses.splice(source.index, 1);
+      const draggedCourse = startColumnCourses.find((course) => {
+        return course.firebaseId === draggableId
+      })
+      if (draggedCourse === undefined) {
+        console.log('ERROR: UNABLE TO FIND DROPPED COURSE');
+        setIsDropDisabled(true);
+        return;
+      };
 
       const finishColumnCourses = Array.from(finishColumn.courses);
       finishColumnCourses.splice(destination.index, 0, draggedCourse);
