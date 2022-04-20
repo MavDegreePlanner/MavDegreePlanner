@@ -313,6 +313,11 @@ function Planner() {
 
     // Drag and drop within the same column
     if (startColumn === finishColumn) {
+      if (searchTerm !== '' && finishColumn.title === 'allCourses') {
+        setIsDropDisabled(true);
+        return;
+      }
+
       const newCourses = Array.from(startColumn.courses);
       const draggedCourse = newCourses.find((course) => {
         return course.firebaseId === draggableId
@@ -326,7 +331,7 @@ function Planner() {
       }
       const draggedIndex = newCourses.indexOf(draggedCourse)
       newCourses.splice(draggedIndex, 1);
-      
+
       newCourses.splice(destination.index, 0, draggedCourse);
 
       const newColumn = {
