@@ -281,7 +281,6 @@ function Planner() {
 
   const onDragEnd = (result: DragUpdate, provided: ResponderProvided) => {
     const { source, destination, draggableId } = result;
-    console.log(draggableId);
     /*-------Screen reader support-------*/
     const message = result.destination
       ? `You have moved the course from
