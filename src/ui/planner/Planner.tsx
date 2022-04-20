@@ -317,6 +317,8 @@ function Planner() {
       const draggedCourse = newCourses.find((course) => {
         return course.firebaseId === draggableId
       })
+      newCourses.splice(source.index, 1);
+
       console.log(draggedCourse)
       if (draggedCourse === undefined) {
         console.log('ERROR: UNABLE TO FIND DROPPED COURSE');
@@ -356,6 +358,7 @@ function Planner() {
       const draggedCourse = startColumnCourses.find((course) => {
         return course.firebaseId === draggableId
       })
+      startColumnCourses.splice(source.index, 1);
       if (draggedCourse === undefined) {
         console.log('ERROR: UNABLE TO FIND DROPPED COURSE');
         setIsDropDisabled(true);
