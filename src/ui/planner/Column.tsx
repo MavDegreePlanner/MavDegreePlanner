@@ -73,11 +73,11 @@ const Column: React.FC<ColumnProps> = ({ column, courses, isDropDisabled }) => {
 
   useEffect(() => {
     let temp = 0;
-    column.courses.map((course) => {
+    column.courses.forEach((course) => {
       temp += parseInt(course.courseId.charAt(course.courseId.length - 3));
     })
     setHours(temp);
-  }, [courses]);
+  }, [column.courses, courses]);
 
   return (
     <Container>
