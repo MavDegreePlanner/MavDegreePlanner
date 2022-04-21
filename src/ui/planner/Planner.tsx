@@ -20,6 +20,7 @@ import { ChosenCourse } from '../../models/ChosenCourse';
 import Sidebar from './../Sidebar'
 import ReactTooltip from "react-tooltip";
 import './Planner.css';
+import { resolve } from 'node:path/win32';
 const Container = styled.div`
   display: flex;
 `;
@@ -323,7 +324,6 @@ function Planner() {
         return course.firebaseId === draggableId
       })
 
-      console.log(draggedCourse)
       if (draggedCourse === undefined) {
         console.log('ERROR: UNABLE TO FIND DROPPED COURSE');
         setIsDropDisabled(true);
@@ -413,23 +413,23 @@ function Planner() {
       /************* PREREQUISITE CHECKING ****************/
 
       /************* COREQUISITE CHECKING ****************/
-      if (finishColumn.id !== "allCourses") {
-        draggedCourse.coreqIds.forEach((ifCoreq) => {
-          if (ifCoreq !== null && (takenRef.current.findIndex(existed => existed.courseId === ifCoreq) === -1)) {
-            let index = 0;
-            for (var i = 0 ; i < startColumnCourses.length ; i++) {
-              if (startColumnCourses[i].courseId === ifCoreq) {
-                index = i;
-              }
+      let coreq = {} as Course;
+      draggedCourse.coreqIds.forEach((ifCoreq) => {
+        if (ifCoreq !== null) {
+        //if (ifCoreq !== null && (takenRef.current.findIndex(existed => existed.courseId === ifCoreq) === -1)) {
+          let index = 0;
+          for (var i = 0 ; i < startColumnCourses.length ; i++) {
+            if (startColumnCourses[i].courseId === ifCoreq) {
+              index = i;
+              break;
             }
-            const [coreq] = startColumnCourses.splice(index, 1);
-            console.log(coreq, index);
-            finishColumnCourses.splice(destination.index, 0, coreq);
           }
-        })
-      }
+          [coreq] = startColumnCourses.splice(index, 1);
+          console.log("coreq = ", coreq, index);
+          if (coreq !== undefined) finishColumnCourses.splice(destination.index, 0, coreq);
+        }
+      })
       /************* COREQUISITE CHECKING ****************/
-      
       const newStartColumn = {
         ...startColumn,
         courses: startColumnCourses,
@@ -439,7 +439,7 @@ function Planner() {
         ...finishColumn,
         courses: finishColumnCourses,
       };
-      
+
       setColumns({
         ...columns,
         [newStartColumn.id]: newStartColumn,
@@ -448,18 +448,35 @@ function Planner() {
 
       // Make firebase call to update data only if semester changed
       if (newFinishColumn.id === 'allCourses') {
-        removeUserChosenCourse(draggedCourse.courseId);
+        (async() => {
+          await removeUserChosenCourse(draggedCourse.courseId);
+          if (coreq !== undefined && Object.keys(coreq).length !== 0) {
+            await removeUserChosenCourse(coreq.courseId);
+          }
+        })();
         takenRef.current = takenRef.current.filter((removeCourse => {
           return removeCourse.courseId !== draggedCourse.courseId;
-        }))
+        }));
       } else {
-        modifyUserChosenCourse(new ChosenCourse(
-          draggedCourse.courseId,
-          newFinishColumn.id,
-          year,
-        ));
-        if ((takenRef.current.findIndex(existed => existed.courseId === draggedCourse.courseId) === -1)) {
+        (async() => {
+          await modifyUserChosenCourse(new ChosenCourse(
+            draggedCourse.courseId,
+            newFinishColumn.id,
+            year, 
+          ));
+          if (coreq !== undefined && Object.keys(coreq).length !== 0) {
+            await modifyUserChosenCourse(new ChosenCourse(
+              coreq.courseId,
+              newFinishColumn.id,
+              year,
+            ));
+          }
+        })();
+        if ((takenRef.current.findIndex(existed => existed.courseId === draggedCourse.courseId || existed.courseId === coreq.courseId) === -1)) {
           takenRef.current.push(new ChosenCourse(draggedCourse.courseId, newFinishColumn.id, year));
+          if (coreq !== undefined && Object.keys(coreq).length !== 0) {
+            takenRef.current.push(new ChosenCourse(coreq.courseId, newFinishColumn.id, year));
+          }
         }
       }
     }
