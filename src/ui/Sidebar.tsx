@@ -11,14 +11,14 @@ import * as AiIcons from "react-icons/ai"
 import "./Navbar.css"
 import "./Sidebar.css"
 import { IconContext } from 'react-icons'
-import { db, getAllCourses } from "../service/DatabaseService";
 
 function Sidebar() {
     const [sidebar, setSidebar] = useState(false)
     const showsidebar = () => setSidebar(!sidebar)
     const [click, setClick] = useState(false);
-    let r = getAllCourses()
-    console.log(r)
+    // DO NOT USE getAllCourses() IN THIS FUNCTION DIRECTLY
+    // let r = getAllCourses()
+    // console.log(r)
 
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
     const [confirmDialog, setConfirmDialog] = useState({isOpen:false, title:''});
