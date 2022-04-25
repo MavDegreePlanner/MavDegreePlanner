@@ -91,7 +91,7 @@ function Planner() {
       courses: [],
     }
   });
-  const [columnOrder, setColumnOrder] = useState<string[]>(['allCourses', 'summer', 'spring', 'winter', 'fall']);
+  const [columnOrder, setColumnOrder] = useState<string[]>(['allCourses', 'spring', 'summer', 'fall']);
   
   const userDataYear = useRef(2022);
   const [chosenYear, setChosenYear] = useState(2022);
@@ -236,7 +236,7 @@ function Planner() {
       });
       
       // Set column order
-      setColumnOrder(['allCourses', 'spring', 'summer', 'fall', 'winter']);
+      setColumnOrder(['allCourses', 'spring', 'summer', 'fall']);
     }
     fetchChosenCourses();
   }, [year]);
