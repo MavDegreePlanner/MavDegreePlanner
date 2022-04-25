@@ -142,19 +142,19 @@ export default function SignUp() {
               <select
                 className="selectbox"
                 required
-                value={Sem}
+                value={Sem + " " + Year}
                 onChange={(e) => {
-                  const semesterYear = e.target.textContent ?? 'Fall 2022';
+                  const semesterYear = e.target.value;
                   const semesterYearSplit = semesterYear.split(' ');
                   setSem(semesterYearSplit[0]);
                   setYear(semesterYearSplit[1]);
                 }}
               >
-                <option value="1">Fall 2022</option>
-                <option value="2">Spring 2021</option>
-                <option value="3">Fall 2020</option>
-                <option value="4">Spring 2019</option>
-                <option value="5">Fall 2018</option>
+                <option value="Fall 2022">Fall 2022</option>
+                <option value="Spring 2021">Spring 2021</option>
+                <option value="Fall 2020">Fall 2020</option>
+                <option value="Spring 2019">Spring 2019</option>
+                <option value="Fall 2018">Fall 2018</option>
               </select>
             </div>
             <div className="formInfo">
@@ -165,11 +165,11 @@ export default function SignUp() {
                 className="selectbox"
                 required
                 value={Major}
-                onChange={(e) => setMajor(e.target.textContent ?? 'SE')}
+                onChange={(e) => setMajor(e.target.value)}
               >
-                <option value="1">SE</option>
-                <option value="2">CSE</option>
-                <option value="3">CE</option>
+                <option value="SE">SE</option>
+                <option value="CSE">CSE</option>
+                <option value="CE">CE</option>
               </select>
             </div>
             <input type="submit" value="SIGNUP" />
