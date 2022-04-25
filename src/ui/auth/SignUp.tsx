@@ -150,11 +150,10 @@ export default function SignUp() {
                   setYear(semesterYearSplit[1]);
                 }}
               >
+                <option value="Spring 2022">Spring 2022</option>
                 <option value="Fall 2022">Fall 2022</option>
-                <option value="Spring 2021">Spring 2021</option>
-                <option value="Fall 2020">Fall 2020</option>
-                <option value="Spring 2019">Spring 2019</option>
-                <option value="Fall 2018">Fall 2018</option>
+                <option value="Spring 2023">Spring 2023</option>
+                <option value="Fall 2023">Fall 2023</option>
               </select>
             </div>
             <div className="formInfo">
