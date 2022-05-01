@@ -4,7 +4,7 @@ Plan out your UTA CSE major with a simple drag and drop interface.
 
 ## Documentation
 
-Documentation can be viewed at [docs/index.html](docs/index.html). It was generated using `typedoc`
+Documentation can be viewed at [docs/index.html](https://mavdegreeplanner.github.io/MavDegreePlanner/). It was generated using `typedoc`
 
 ### Generating documentation
 
