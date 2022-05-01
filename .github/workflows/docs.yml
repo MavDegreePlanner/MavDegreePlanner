@@ -9,9 +9,6 @@ jobs:
   deploy_docs:
     concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -19,7 +16,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '12.x'
 
       - name: Install Dependencies
         run: npm install
