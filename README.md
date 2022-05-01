@@ -18,9 +18,9 @@ npm install --save-dev typedoc
 
 ## Firebase Setup
 
-In the project directory, rename the file `.env.template` to `.env` and enter your Firebase config details from your Firebase console in it
+In the project directory, copy the file `.env.template` and rename it to `.env`, then enter your Firebase config details from your Firebase console in it.
 
-Inside the `.env` file
+Inside the `.env` file:
 
 ```text
 REACT_APP_FIREBASE_API_KEY=keyHere
