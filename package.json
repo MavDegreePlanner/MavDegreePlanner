@@ -64,8 +64,5 @@
   },
   "prettier": {
     "singleQuote": true
-  },
-  "devDependencies": {
-    "typedoc": "^0.22.15"
   }
 }

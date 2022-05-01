@@ -2,20 +2,6 @@
 
 Plan out your UTA CSE major with a simple drag and drop interface.
 
-## Documentation
-
-Documentation can be viewed at [docs/index.html](docs/index.html).
-
-Documentation was generated using `typedoc`
-
-```text
-# Install
-npm install --save-dev typedoc
-
-# Generate
-./node_modules/.bin/typedoc --entryPointStrategy expand src/
-```
-
 ## Firebase Setup
 
 In the project directory, rename the file `.env.template` to `.env` and enter your Firebase config details from your Firebase console in it
