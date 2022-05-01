@@ -4,7 +4,7 @@ Plan out your UTA CSE major with a simple drag and drop interface.
 
 ## Documentation
 
-Documentation can be viewed on the [docs branch](https://github.com/MavDegreePlanner/MavDegreePlanner/tree/docs) or on [gh-pages](https://mavdegreeplanner.github.io/MavDegreePlanner/). It is generated using `typedoc`, and is auto-generated when a commit is pushed to main.
+Documentation can be viewed on the on [gh-pages](https://mavdegreeplanner.github.io/MavDegreePlanner/), or the [docs branch](https://github.com/MavDegreePlanner/MavDegreePlanner/tree/docs). It is generated using `typedoc`, and is auto-generated when a commit is pushed to main.
 
 ### Generating documentation
 
