@@ -43,7 +43,18 @@ const logInAnonymously = async () => {
   });
 };
 
-interface RegisterInterface {
+/**
+ * Inteface for the registerWithEmailAndPassword function
+ * 
+ * @param email
+ * @param password
+ * @param name
+ * @param major
+ * @param startingSemester
+ * @param startingYear
+ * @param onError
+ */
+export interface RegisterInterface {
   email: string;
   password: string;
   name: string;

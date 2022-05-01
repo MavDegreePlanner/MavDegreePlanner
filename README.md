@@ -22,7 +22,7 @@ In the project directory, rename the file `.env.template` to `.env` and enter yo
 
 Inside the `.env` file
 
-```env
+```text
 REACT_APP_FIREBASE_API_KEY=keyHere
 REACT_APP_FIREBASE_AUTH_DOMAIN=domainHere
 REACT_APP_FIREBASE_PROJECT_ID=projectIdHere

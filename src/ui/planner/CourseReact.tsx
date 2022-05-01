@@ -41,7 +41,13 @@ const PreReq = styled.div`
  font-size: 12px;
 `;
 
-interface CourseProps {
+/**
+ * Course and its index in the column
+ * 
+ * @param course
+ * @param index
+ */
+export interface CourseProps {
   course: Course;
   index: number;
 }

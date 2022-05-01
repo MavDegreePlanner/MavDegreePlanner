@@ -58,7 +58,14 @@ const TotalHours = styled.div<any>`
   background-image: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
 `;
 
-interface ColumnProps {
+/**
+ * Column and its courses
+ * 
+ * @param column
+ * @param courses
+ * @param isDropDisabled
+ */
+export interface ColumnProps {
   column: {
     id: string,
     title: string,
